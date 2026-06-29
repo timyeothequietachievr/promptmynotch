@@ -36,6 +36,8 @@ enum BrowserURLReader {
         let presentationId: String?
         let mode: String
         let isActiveTab: Bool
+        let isPresenterNotesTab: Bool
+        let isAudienceSlideshowTab: Bool
     }
 
     private static let browsers: [BrowserTarget] = [
@@ -97,34 +99,65 @@ enum BrowserURLReader {
         }
         guard !withSlide.isEmpty else { return nil }
 
-        let pick = withSlide.first(where: \.isActiveTab)
-            ?? withSlide.first(where: { $0.mode == "edit" })
-            ?? withSlide.first
+        let ranked = withSlide.sorted { rank(for: $0) < rank(for: $1) }
+        guard let pick = ranked.first else { return nil }
 
-        guard let pick, let presentationID = pick.presentationId else { return nil }
+        guard let presentationID = pick.presentationId else { return nil }
 
         return GoogleSlidesPresenterSession(
             presentationID: presentationID,
             slideObjectId: pick.slideObjectId,
             slideIndex: pick.slideIndex ?? 0,
             url: pick.url,
-            sourceMode: pick.mode
+            sourceMode: pick.isAudienceSlideshowTab ? "present" : pick.mode
         )
+    }
+
+    /// Lower rank = higher priority. Audience slideshow wins over edit and presenter notes.
+    private static func rank(for probe: BrowserTabProbe) -> Int {
+        if probe.isAudienceSlideshowTab { return 0 }
+        if probe.mode == "edit" { return 1 }
+        if probe.mode == "view" { return 2 }
+        if probe.isPresenterNotesTab { return 4 }
+        if probe.mode == "present" { return 0 }
+        return 3
+    }
+
+    private static func isPresenterNotesTab(url: String, tabTitle: String?) -> Bool {
+        let lowerURL = url.lowercased()
+        if lowerURL.contains("speakernotes") { return true }
+
+        guard let title = tabTitle?.lowercased() else { return false }
+        if title.contains("presenter view") { return true }
+        if title.contains("speaker notes") { return true }
+        return false
+    }
+
+    private static func isAudienceSlideshowTab(url: String, tabTitle: String?, mode: String) -> Bool {
+        guard mode == "present" else { return false }
+        return !isPresenterNotesTab(url: url, tabTitle: tabTitle)
     }
 
     private static func probeChromiumBrowser(appName: String) -> [BrowserTabProbe] {
         let script = """
         tell application "\(appName)"
-            if (count of windows) is 0 then return {}
-            try
-                set tabURL to URL of active tab of front window
-                set tabTitle to title of active tab of front window
-                if tabURL contains "docs.google.com/presentation" then
-                    return {tabURL, tabTitle, "true"}
-                end if
-            end try
+            set output to {}
+            if (count of windows) is 0 then return output
+            repeat with w in windows
+                repeat with t in tabs of w
+                    try
+                        set tabURL to URL of t
+                        if tabURL contains "docs.google.com/presentation" then
+                            set tabTitle to title of t
+                            set end of output to tabURL
+                            set end of output to tabTitle
+                            set end of output to "false"
+                        end if
+                    end try
+                end repeat
+            end repeat
+            return output
         end tell
-        return {}
         """
 
         return decodeProbes(fromAppleScriptList: script)
@@ -133,16 +166,23 @@ enum BrowserURLReader {
     private static func probeSafari() -> [BrowserTabProbe] {
         let script = """
         tell application "Safari"
-            if (count of windows) is 0 then return {}
-            try
-                set tabURL to URL of current tab of front window
-                set tabTitle to name of current tab of front window
-                if tabURL contains "docs.google.com/presentation" then
-                    return {tabURL, tabTitle, "true"}
-                end if
-            end try
+            set output to {}
+            if (count of windows) is 0 then return output
+            repeat with w in windows
+                repeat with t in tabs of w
+                    try
+                        set tabURL to URL of t
+                        if tabURL contains "docs.google.com/presentation" then
+                            set tabTitle to name of t
+                            set end of output to tabURL
+                            set end of output to tabTitle
+                            set end of output to "false"
+                        end if
+                    end try
+                end repeat
+            end repeat
+            return output
         end tell
-        return {}
         """
 
         return decodeProbes(fromAppleScriptList: script)
@@ -200,6 +240,9 @@ enum BrowserURLReader {
             mode = "view"
         }
 
+        let presenterNotes = isPresenterNotesTab(url: url, tabTitle: tabTitle)
+        let audience = isAudienceSlideshowTab(url: url, tabTitle: tabTitle, mode: mode)
+
         return BrowserTabProbe(
             url: url,
             tabTitle: tabTitle,
@@ -207,7 +250,9 @@ enum BrowserURLReader {
             slideIndex: parsed.index,
             presentationId: presentationID,
             mode: mode,
-            isActiveTab: isActiveTab
+            isActiveTab: isActiveTab,
+            isPresenterNotesTab: presenterNotes,
+            isAudienceSlideshowTab: audience
         )
     }
 

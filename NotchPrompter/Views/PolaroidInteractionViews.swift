@@ -79,6 +79,13 @@ final class PolaroidStickersView: NSView {
         needsDisplay = true
     }
 
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        guard bounds.contains(point) else { return nil }
+        if hitTestResizeHandle(at: point) != nil { return self }
+        if hitTestSticker(at: point) != nil { return self }
+        return nil
+    }
+
     override func mouseDown(with event: NSEvent) {
         window?.makeFirstResponder(self)
         let point = convert(event.locationInWindow, from: nil)
@@ -98,10 +105,6 @@ final class PolaroidStickersView: NSView {
             coordinator?.commit(stickers: stickers, selected: stickerID)
             return
         }
-
-        selectedStickerID = nil
-        dragMode = .none
-        coordinator?.commit(stickers: stickers, selected: nil)
     }
 
     override func mouseDragged(with event: NSEvent) {
@@ -265,13 +268,15 @@ struct PolaroidCaptionEditor: NSViewRepresentable {
 
     func makeNSView(context: Context) -> PolaroidCaptionContainer {
         let container = PolaroidCaptionContainer()
-        let field = PolaroidCaptionField(string: text)
-        field.onDoubleClick = { [weak coordinator = context.coordinator] in
+        container.wantsLayer = true
+        container.layer?.backgroundColor = NSColor.white.cgColor
+
+        let field = PolaroidCaptionField(string: text, fontSize: fontSize)
+        field.onClick = { [weak coordinator = context.coordinator] in
+            CameraMirrorWindowController.shared.setPolaroidEditingActive(true)
             coordinator?.beginEditing()
         }
         field.delegate = context.coordinator
-        field.font = PolaroidFont.nsFont(size: fontSize)
-        field.textColor = NSColor(white: 0.22, alpha: 1)
         field.translatesAutoresizingMaskIntoConstraints = false
         container.captionField = field
         container.addSubview(field)
@@ -290,8 +295,7 @@ struct PolaroidCaptionEditor: NSViewRepresentable {
         if field.stringValue != text {
             field.stringValue = text
         }
-        field.font = PolaroidFont.nsFont(size: fontSize)
-        // Avoid re-focusing on every SwiftUI refresh (prevents polaroid jump).
+        field.applyCaptionStyle(fontSize: fontSize)
         if isEditing, !context.coordinator.isEditingActive {
             context.coordinator.beginEditing()
         } else if !isEditing, context.coordinator.isEditingActive {
@@ -301,7 +305,7 @@ struct PolaroidCaptionEditor: NSViewRepresentable {
 
     final class Coordinator: NSObject, NSTextFieldDelegate {
         var parent: PolaroidCaptionEditor
-        weak var field: NSTextField?
+        weak var field: PolaroidCaptionField?
         var isEditingActive = false
 
         init(parent: PolaroidCaptionEditor) {
@@ -317,7 +321,11 @@ struct PolaroidCaptionEditor: NSViewRepresentable {
             DispatchQueue.main.async { [weak self] in
                 guard let self, let field = self.field else { return }
                 field.window?.makeFirstResponder(field)
-                if let editor = field.currentEditor() {
+                if let editor = field.currentEditor() as? NSTextView {
+                    let paragraph = NSMutableParagraphStyle()
+                    paragraph.alignment = .center
+                    editor.alignment = .center
+                    editor.typingAttributes[.paragraphStyle] = paragraph
                     editor.selectedRange = NSRange(location: field.stringValue.count, length: 0)
                 }
             }
@@ -327,6 +335,7 @@ struct PolaroidCaptionEditor: NSViewRepresentable {
             guard let field else { return }
             isEditingActive = false
             field.isEditable = false
+            field.isSelectable = false
             if field.window?.firstResponder === field.currentEditor() {
                 field.window?.makeFirstResponder(nil)
             }
@@ -357,6 +366,8 @@ struct PolaroidCaptionEditor: NSViewRepresentable {
 final class PolaroidCaptionContainer: NSView {
     weak var captionField: NSView?
 
+    override var isOpaque: Bool { false }
+
     override var mouseDownCanMoveWindow: Bool { false }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
@@ -366,24 +377,26 @@ final class PolaroidCaptionContainer: NSView {
 }
 
 final class PolaroidCaptionField: NSTextField {
-    var onDoubleClick: (() -> Void)?
+    var onClick: (() -> Void)?
 
-    convenience init(string: String) {
+    convenience init(string: String, fontSize: CGFloat) {
         self.init(frame: .zero)
         stringValue = string
         isEditable = false
-        isSelectable = true
+        isSelectable = false
+        applyCaptionStyle(fontSize: fontSize)
     }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         isBordered = false
+        isBezeled = false
         drawsBackground = false
         backgroundColor = .clear
         focusRingType = .none
         alignment = .center
         lineBreakMode = .byWordWrapping
-        maximumNumberOfLines = 3
+        maximumNumberOfLines = 2
         cell?.wraps = true
         cell?.isScrollable = false
     }
@@ -392,15 +405,35 @@ final class PolaroidCaptionField: NSTextField {
         nil
     }
 
+    func applyCaptionStyle(fontSize: CGFloat) {
+        let font = PolaroidFont.nsFont(size: fontSize)
+        self.font = font
+        textColor = .black
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        paragraph.lineBreakMode = .byWordWrapping
+
+        placeholderAttributedString = NSAttributedString(
+            string: "Click to add text",
+            attributes: [
+                .font: font,
+                .foregroundColor: NSColor(white: 0.58, alpha: 1),
+                .paragraphStyle: paragraph,
+            ]
+        )
+
+        if let editor = currentEditor() {
+            editor.alignment = .center
+        }
+    }
+
     override var mouseDownCanMoveWindow: Bool { false }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
-    override func mouseUp(with event: NSEvent) {
-        if event.clickCount >= 2 {
-            onDoubleClick?()
-            return
-        }
-        super.mouseUp(with: event)
+    override func mouseDown(with event: NSEvent) {
+        onClick?()
+        super.mouseDown(with: event)
     }
 }

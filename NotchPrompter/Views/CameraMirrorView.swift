@@ -43,8 +43,9 @@ struct CameraMirrorView: View {
 
                     if isCircle {
                         if polaroidActive {
-                            polaroidSection(cardWidth: cardWidth, ejectDirection: .circleBottom)
-                                .frame(width: geo.size.width, alignment: .top)
+                            polaroidSection(cardWidth: cardWidth, ejectDirection: .circleTopDown)
+                                .frame(width: geo.size.width, height: slotHeight, alignment: .top)
+                                .clipped()
                         }
                     } else {
                         Color.clear
@@ -57,7 +58,7 @@ struct CameraMirrorView: View {
                         cardWidth: cardWidth,
                         ejectDirection: .overlayUp
                     )
-                    .frame(width: geo.size.width)
+                    .frame(width: geo.size.width, height: slotHeight, alignment: .top)
                     .padding(.top, videoSize.height - 12)
                     .zIndex(2)
                 }
@@ -158,7 +159,8 @@ struct CameraMirrorView: View {
             Button {
                 startPolaroidFlow()
             } label: {
-                Image(systemName: "photo.on.rectangle.angled")
+                CaptureCameraIcon()
+                    .frame(width: 18, height: 18)
                     .cameraControlCircleIcon()
             }
             .buttonStyle(.plain)
@@ -224,23 +226,15 @@ struct CameraMirrorView: View {
     }
 
     private func polaroidSection(cardWidth: CGFloat, ejectDirection: PolaroidEjectDirection) -> some View {
-        PolaroidDragBlockingHost {
-            PolaroidEjectStack(
-                capture: Binding(
-                    get: {
-                        polaroidCapture ?? PolaroidCaptureState(
-                            photo: NSImage(),
-                            cardWidth: cardWidth,
-                            caption: ""
-                        )
-                    },
-                    set: { polaroidCapture = $0 }
-                ),
-                onCancel: cancelPolaroid,
-                onSave: savePolaroid,
-                ejectDirection: ejectDirection
-            )
-        }
+        PolaroidEjectStack(
+            capture: Binding(
+                get: { polaroidCapture! },
+                set: { polaroidCapture = $0 }
+            ),
+            onCancel: cancelPolaroid,
+            onSave: savePolaroid,
+            ejectDirection: ejectDirection
+        )
     }
 
     private func startPolaroidFlow() {
@@ -277,7 +271,9 @@ struct CameraMirrorView: View {
             polaroidCapture = PolaroidCaptureState(
                 photo: photo,
                 cardWidth: cardWidth,
-                caption: PolaroidComposer.defaultCaption()
+                capturedAt: Date(),
+                photoIsCircular: appState.cameraMirrorShape.isCircle,
+                caption: ""
             )
         }
     }
@@ -294,7 +290,9 @@ struct CameraMirrorView: View {
         let composed = cameraService.composePolaroid(
             from: capture.photo,
             caption: capture.caption,
+            capturedAt: capture.capturedAt,
             photoWidth: capture.cardWidth,
+            photoIsCircular: capture.photoIsCircular,
             stickers: capture.stickers
         )
         do {

@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Literata";
+  src: url("/fonts/Literata-Variable.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/fonts/BasierCircle-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/fonts/BasierCircle-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basier Circle";
+  src: url("/fonts/BasierCircle-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  src: url("/fonts/AtkinsonHyperlegible-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --tqa-ember: #d54a2f;
+  --tqa-ember-deep: #8a2a1c;
+  --tqa-sunrise: #e5a402;
+  --tqa-sunrise-soft: #f5c84b;
+  --tqa-ink: #2b2b52;
+  --tqa-ink-deep: #1a1a3a;
+  --tqa-paper: #f5f0d3;
+  --tqa-paper-soft: #faf6e1;
+  --tqa-charcoal: #1e1e1e;
+}
+
+@theme inline {
+  --color-ember: #d54a2f;
+  --color-ember-deep: #8a2a1c;
+  --color-sunrise: #e5a402;
+  --color-sunrise-soft: #f5c84b;
+  --color-ink: #2b2b52;
+  --color-ink-deep: #1a1a3a;
+  --color-paper: #f5f0d3;
+  --color-paper-soft: #faf6e1;
+  --color-charcoal: #1e1e1e;
+  --color-warm-500: #8a8572;
+  --color-warm-700: #4a4638;
+  --font-display: "Literata", ui-serif, Georgia, serif;
+  --font-sans: "Basier Circle", ui-sans-serif, system-ui, sans-serif;
+  --font-reading: "Atkinson Hyperlegible", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans antialiased;
+  background: var(--tqa-charcoal);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--tqa-sunrise-soft) 45%, transparent);
+  color: var(--tqa-ink-deep);
+}

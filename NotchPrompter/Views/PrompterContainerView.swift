@@ -13,6 +13,7 @@ struct PrompterContainerView: View {
     @State private var isEditMode = false
     @State private var editDraftText = ""
     @State private var editOriginalText = ""
+    @State private var editInsertion = PrompterEditInsertion()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,6 +22,19 @@ struct PrompterContainerView: View {
                 .frame(height: 16)
 
             prompterToolbarChrome
+
+            if isEditMode {
+                VStack(spacing: 6) {
+                    Text("Double-click a word to toggle ALL CAPS emphasis")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.7))
+                        .allowsHitTesting(false)
+
+                    PrompterEditSnippetBar(insertion: $editInsertion)
+                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 6)
+            }
 
             ZStack {
                 if let countdown = scrollEngine.countdown {
@@ -37,6 +51,7 @@ struct PrompterContainerView: View {
                 } else if isEditMode {
                     PrompterSlideEditor(
                         text: $editDraftText,
+                        insertion: $editInsertion,
                         fontSize: appState.fontSize,
                         textColor: Color(hex: appState.textColorHex) ?? .white
                     )
@@ -187,13 +202,6 @@ struct PrompterContainerView: View {
                 PrompterWindowDragHandle()
             }
             .contentShape(Rectangle())
-
-            if isEditMode {
-                Text("Double-click a word to toggle ALL CAPS emphasis")
-                    .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.7))
-                    .allowsHitTesting(false)
-            }
 
             VoiceInputMeterBar(
                 level: speechScroller.level,
@@ -353,6 +361,7 @@ struct PrompterContainerView: View {
     private func enterEditMode() {
         syncEditDraftFromPresentation()
         editOriginalText = editDraftText
+        editInsertion = PrompterEditInsertion()
         scrollEngine.setPaused(true)
         isEditMode = true
         PrompterWindowController.shared.setEditModeActive(true)

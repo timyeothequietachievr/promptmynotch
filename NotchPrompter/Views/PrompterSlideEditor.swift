@@ -1,9 +1,23 @@
 import AppKit
 import SwiftUI
 
+struct PrompterEditInsertion: Equatable {
+    var sequence = 0
+    var text = ""
+}
+
+enum PrompterEditSnippet: String, CaseIterable, Identifiable {
+    case pause = "--PAUSE--"
+
+    var id: String { rawValue }
+
+    var label: String { rawValue }
+}
+
 /// Editable speaker-notes surface for prompter edit mode. Double-click toggles ALL CAPS emphasis.
 struct PrompterSlideEditor: NSViewRepresentable {
     @Binding var text: String
+    @Binding var insertion: PrompterEditInsertion
     let fontSize: Double
     let textColor: Color
 
@@ -39,6 +53,11 @@ struct PrompterSlideEditor: NSViewRepresentable {
         guard let textView = scrollView.documentView as? PrompterEditTextView else { return }
         context.coordinator.parent = self
         context.coordinator.textView = textView
+
+        if context.coordinator.lastInsertionSequence != insertion.sequence, !insertion.text.isEmpty {
+            context.coordinator.lastInsertionSequence = insertion.sequence
+            context.coordinator.insertTextAtCursor(insertion.text)
+        }
 
         guard !context.coordinator.isUpdating else { return }
         if textView.string != text {
@@ -109,9 +128,28 @@ struct PrompterSlideEditor: NSViewRepresentable {
         var parent: PrompterSlideEditor
         weak var textView: NSTextView?
         var isUpdating = false
+        var lastInsertionSequence = 0
 
         init(parent: PrompterSlideEditor) {
             self.parent = parent
+        }
+
+        func insertTextAtCursor(_ snippet: String) {
+            guard let textView else { return }
+            guard !snippet.isEmpty else { return }
+
+            let range = textView.selectedRange()
+            if let storage = textView.textStorage {
+                storage.replaceCharacters(in: range, with: snippet)
+            }
+            textView.didChangeText()
+
+            let newLocation = range.location + (snippet as NSString).length
+            textView.setSelectedRange(NSRange(location: newLocation, length: 0))
+
+            DispatchQueue.main.async {
+                textView.window?.makeFirstResponder(textView)
+            }
         }
 
         func textDidChange(_ newText: String) {
@@ -130,6 +168,34 @@ struct PrompterSlideEditor: NSViewRepresentable {
         func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
             true
         }
+    }
+}
+
+struct PrompterEditSnippetBar: View {
+    @Binding var insertion: PrompterEditInsertion
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(PrompterEditSnippet.allCases) { snippet in
+                Button {
+                    insertion = PrompterEditInsertion(
+                        sequence: insertion.sequence + 1,
+                        text: snippet.rawValue
+                    )
+                } label: {
+                    Text(snippet.label)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(.white.opacity(0.18), in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .help("Insert \(snippet.label) at cursor")
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 28)
     }
 }
 

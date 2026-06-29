@@ -2,7 +2,7 @@
 
 A native macOS teleprompter inspired by [Moody](https://moody.mjarosz.com), with **Google Slides** and **Keynote** speaker notes import as the primary workflow.
 
-> **Version 2.0.0 milestone** — see [VERSION_2.md](VERSION_2.md) for the v2 feature list and how to revert (`git tag v2.0.0`). Version 1: [VERSION_1.md](VERSION_1.md) (`v1.0.0`).
+> **Version 2.2 milestone** — see [VERSION_2.2.md](VERSION_2.2.md) for the v2.2 feature list and how to revert (`git tag v2.2.0`). Version 2.1: [VERSION_2.1.md](VERSION_2.1.md) (`v2.1.0`). Version 2: [VERSION_2.md](VERSION_2.md) (`v2.0.0`). Version 1: [VERSION_1.md](VERSION_1.md) (`v1.0.0`).
 
 ## Import priority
 

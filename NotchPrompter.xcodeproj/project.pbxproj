@@ -61,6 +61,8 @@
 		A1000000000000000000003B /* CameraReactionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003B /* CameraReactionMonitor.swift */; };
 		A1000000000000000000003C /* PolaroidFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003C /* PolaroidFlowViews.swift */; };
 		A1000000000000000000003D /* PolaroidInteractionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003D /* PolaroidInteractionViews.swift */; };
+		A10000000000000000000049 /* CaptureCameraIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000049 /* CaptureCameraIcon.swift */; };
+		A10000000000000000000048 /* PolaroidEmojiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000048 /* PolaroidEmojiData.swift */; };
 		A1000000000000000000003E /* PrompterTextMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003E /* PrompterTextMetrics.swift */; };
 		A1000000000000000000003F /* PrompterHostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003F /* PrompterHostingView.swift */; };
 		A10000000000000000000040 /* PrompterWordDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000040 /* PrompterWordDisplay.swift */; };
@@ -125,6 +127,8 @@
 		A2000000000000000000003A /* CameraFrameCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFrameCapture.swift; sourceTree = "<group>"; };
 		A2000000000000000000003C /* PolaroidFlowViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidFlowViews.swift; sourceTree = "<group>"; };
 		A2000000000000000000003D /* PolaroidInteractionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidInteractionViews.swift; sourceTree = "<group>"; };
+		A20000000000000000000049 /* CaptureCameraIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCameraIcon.swift; sourceTree = "<group>"; };
+		A20000000000000000000048 /* PolaroidEmojiData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidEmojiData.swift; sourceTree = "<group>"; };
 		A2000000000000000000003E /* PrompterTextMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterTextMetrics.swift; sourceTree = "<group>"; };
 		A2000000000000000000003F /* PrompterHostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterHostingView.swift; sourceTree = "<group>"; };
 		A20000000000000000000040 /* PrompterWordDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterWordDisplay.swift; sourceTree = "<group>"; };
@@ -225,6 +229,7 @@
 				A20000000000000000000027 /* PresenterAccessibilityReader.swift */,
 				A20000000000000000000028 /* SlideSyncPermissions.swift */,
 				A2000000000000000000002B /* GoogleSlidesSlideIndexCache.swift */,
+				A20000000000000000000048 /* PolaroidEmojiData.swift */,
 				A20000000000000000000031 /* CameraMirrorService.swift */,
 				A2000000000000000000003A /* CameraFrameCapture.swift */,
 				A2000000000000000000003B /* CameraReactionMonitor.swift */,
@@ -261,6 +266,7 @@
 				A20000000000000000000041 /* PrompterInteractionView.swift */,
 				A20000000000000000000034 /* CameraMirrorView.swift */,
 				A2000000000000000000003C /* PolaroidFlowViews.swift */,
+				A20000000000000000000049 /* CaptureCameraIcon.swift */,
 				A2000000000000000000003D /* PolaroidInteractionViews.swift */,
 				A20000000000000000000035 /* CameraPreviewView.swift */,
 				A20000000000000000000037 /* CameraMirrorSettingsView.swift */,
@@ -395,6 +401,8 @@
 				A10000000000000000000033 /* CameraMirrorWindowController.swift in Sources */,
 				A10000000000000000000034 /* CameraMirrorView.swift in Sources */,
 				A1000000000000000000003C /* PolaroidFlowViews.swift in Sources */,
+				A10000000000000000000049 /* CaptureCameraIcon.swift in Sources */,
+				A10000000000000000000048 /* PolaroidEmojiData.swift in Sources */,
 				A1000000000000000000003D /* PolaroidInteractionViews.swift in Sources */,
 				A10000000000000000000035 /* CameraPreviewView.swift in Sources */,
 				A10000000000000000000036 /* CameraMirrorSettings.swift in Sources */,
@@ -442,7 +450,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotchPrompter/NotchPrompter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -451,7 +459,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.notchprompter.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -466,7 +474,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotchPrompter/NotchPrompter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -475,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.notchprompter.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

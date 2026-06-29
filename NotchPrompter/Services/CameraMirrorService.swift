@@ -215,10 +215,19 @@ final class CameraMirrorService: ObservableObject {
     func composePolaroid(
         from photo: NSImage,
         caption: String,
+        capturedAt: Date,
         photoWidth: CGFloat,
+        photoIsCircular: Bool = false,
         stickers: [PolaroidSticker] = []
     ) -> NSImage {
-        PolaroidComposer.compose(from: photo, caption: caption, photoWidth: photoWidth, stickers: stickers)
+        PolaroidComposer.compose(
+            from: photo,
+            caption: caption,
+            capturedAt: capturedAt,
+            photoWidth: photoWidth,
+            photoIsCircular: photoIsCircular,
+            stickers: stickers
+        )
     }
 
     private static let selectedCameraKey = "camera_mirror_device_id"

@@ -4,6 +4,10 @@ final class CameraMirrorPanel: NSPanel {
     /// Above the teleprompter (statusBar) and normal floating windows.
     private static let alwaysOnTopLevel = NSWindow.Level(rawValue: NSWindow.Level.statusBar.rawValue + 1)
 
+    var allowsTextEditing = false
+
+    override var canBecomeKey: Bool { allowsTextEditing }
+
     init(contentRect: NSRect) {
         super.init(
             contentRect: contentRect,

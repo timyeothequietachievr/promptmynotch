@@ -82,7 +82,12 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
     }
 
     func setPolaroidEditingActive(_ active: Bool) {
-        panel?.isMovableByWindowBackground = !active
+        guard let panel else { return }
+        panel.allowsTextEditing = active
+        panel.isMovableByWindowBackground = !active
+        if active {
+            panel.makeKeyAndOrderFront(nil)
+        }
     }
 
     func bind(appState: AppState) {

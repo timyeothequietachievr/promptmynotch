@@ -70,17 +70,18 @@ final class CameraFrameCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDe
 }
 
 enum PolaroidComposer {
-    static func defaultCaption(at date: Date = .now) -> String {
+    static func photoTimestamp(at date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
+        formatter.dateFormat = "yyyy/MM/dd HH:mm"
         return formatter.string(from: date)
     }
 
     static func compose(
         from photo: NSImage,
         caption: String,
+        capturedAt: Date,
         photoWidth: CGFloat,
+        photoIsCircular: Bool = false,
         stickers: [PolaroidSticker] = []
     ) -> NSImage {
         let aspect = photo.size.height / max(photo.size.width, 1)
@@ -105,27 +106,66 @@ enum PolaroidComposer {
             width: targetPhotoWidth,
             height: photoHeight
         )
-        photo.draw(in: photoRect, from: .zero, operation: .sourceOver, fraction: 1)
 
-        let fontSize: CGFloat = targetPhotoWidth > 280 ? 16 : 15
-        let font = PolaroidFont.nsFont(size: fontSize)
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
-        paragraph.lineBreakMode = .byWordWrapping
+        if photoIsCircular {
+            let diameter = targetPhotoWidth
+            let circleRect = NSRect(
+                x: photoRect.midX - diameter / 2,
+                y: photoRect.midY - diameter / 2,
+                width: diameter,
+                height: diameter
+            )
+            NSGraphicsContext.saveGraphicsState()
+            NSBezierPath(ovalIn: circleRect).addClip()
+            drawAspectFill(photo, in: circleRect)
+            NSGraphicsContext.restoreGraphicsState()
+        } else {
+            photo.draw(in: photoRect, from: .zero, operation: .sourceOver, fraction: 1)
+        }
 
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font,
-            .foregroundColor: NSColor(white: 0.22, alpha: 1),
-            .paragraphStyle: paragraph,
+        let timestamp = photoTimestamp(at: capturedAt)
+        let timestampFont = NSFont.monospacedSystemFont(ofSize: 9, weight: .semibold)
+        let timestampShadow = NSShadow()
+        timestampShadow.shadowColor = NSColor.black.withAlphaComponent(0.75)
+        timestampShadow.shadowOffset = NSSize(width: 0, height: -1)
+        timestampShadow.shadowBlurRadius = 1
+        let timestampAttrs: [NSAttributedString.Key: Any] = [
+            .font: timestampFont,
+            .foregroundColor: NSColor(red: 1, green: 0.82, blue: 0.35, alpha: 1),
+            .shadow: timestampShadow,
         ]
-
-        let captionRect = NSRect(
-            x: sideBorder + 4,
-            y: 12,
-            width: targetPhotoWidth - 8,
-            height: bottomBorder - 16
+        let timestampSize = (timestamp as NSString).size(withAttributes: timestampAttrs)
+        let timestampPoint = NSPoint(
+            x: photoRect.maxX - timestampSize.width - 6,
+            y: photoRect.minY + 6
         )
-        (caption as NSString).draw(with: captionRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes)
+        (timestamp as NSString).draw(at: timestampPoint, withAttributes: timestampAttrs)
+
+        if !caption.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let fontSize = PolaroidLayout.captionFontSize(for: targetPhotoWidth)
+            let font = PolaroidFont.nsFont(size: fontSize)
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.alignment = .center
+            paragraph.lineBreakMode = .byWordWrapping
+
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: NSColor.black,
+                .paragraphStyle: paragraph,
+            ]
+
+            let captionRect = NSRect(
+                x: sideBorder + 4,
+                y: 12,
+                width: targetPhotoWidth - 8,
+                height: bottomBorder - 16
+            )
+            (caption as NSString).draw(
+                with: captionRect,
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                attributes: attributes
+            )
+        }
 
         let scaleFactor = targetPhotoWidth / 320
         for sticker in stickers {
@@ -144,6 +184,21 @@ enum PolaroidComposer {
 
         composed.unlockFocus()
         return composed
+    }
+
+    private static func drawAspectFill(_ image: NSImage, in bounds: NSRect) {
+        let imageSize = image.size
+        guard imageSize.width > 0, imageSize.height > 0 else { return }
+
+        let scale = max(bounds.width / imageSize.width, bounds.height / imageSize.height)
+        let drawSize = NSSize(width: imageSize.width * scale, height: imageSize.height * scale)
+        let drawRect = NSRect(
+            x: bounds.midX - drawSize.width / 2,
+            y: bounds.midY - drawSize.height / 2,
+            width: drawSize.width,
+            height: drawSize.height
+        )
+        image.draw(in: drawRect, from: .zero, operation: .sourceOver, fraction: 1)
     }
 }
 

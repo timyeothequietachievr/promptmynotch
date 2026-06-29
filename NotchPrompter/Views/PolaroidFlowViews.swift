@@ -21,6 +21,8 @@ struct PolaroidSticker: Identifiable, Equatable {
 struct PolaroidCaptureState {
     let photo: NSImage
     let cardWidth: CGFloat
+    let capturedAt: Date
+    let photoIsCircular: Bool
     var caption: String
     var isEditingCaption = false
     var ejectProgress: CGFloat = 0
@@ -31,8 +33,8 @@ struct PolaroidCaptureState {
 enum PolaroidEjectDirection {
     /// Rectangle mode: card rises from below the video fold (negative Y offset).
     case overlayUp
-    /// Circle mode: card sits at the bottom edge — only a small offset, never pulled into the circle.
-    case circleBottom
+    /// Circle mode: card drops from above into the slot below the circle.
+    case circleTopDown
 }
 
 enum PolaroidLayout {
@@ -60,11 +62,17 @@ enum PolaroidLayout {
     static func slotHeight(for cardWidth: CGFloat) -> CGFloat {
         cardHeight(for: cardWidth) + actionsHeight + 24
     }
+
+    static func captionFontSize(for cardWidth: CGFloat) -> CGFloat {
+        min(34, max(28, cardWidth * 0.1))
+    }
 }
 
 struct PolaroidCardView: View {
     let photo: NSImage
     let cardWidth: CGFloat
+    let capturedAt: Date
+    let photoIsCircular: Bool
     @Binding var caption: String
     @Binding var isEditingCaption: Bool
     @Binding var stickers: [PolaroidSticker]
@@ -72,22 +80,24 @@ struct PolaroidCardView: View {
 
     private var photoHeight: CGFloat { cardWidth * PolaroidLayout.photoAspect }
     private var cardContentSize: CGSize { PolaroidLayout.cardContentSize(for: cardWidth) }
+    private var circularPhotoDiameter: CGFloat { cardWidth }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             VStack(spacing: 0) {
-                Image(nsImage: photo)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: cardWidth, height: photoHeight)
-                    .clipped()
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedStickerID = nil
-                        isEditingCaption = false
-                    }
+                ZStack(alignment: .bottomTrailing) {
+                    photoArea
 
-                captionArea
+                    Text(PolaroidComposer.photoTimestamp(at: capturedAt))
+                        .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(Color(red: 1, green: 0.82, blue: 0.35))
+                        .shadow(color: .black.opacity(0.75), radius: 1, x: 0, y: 1)
+                        .padding(6)
+                        .allowsHitTesting(false)
+                }
+                .frame(width: cardWidth, height: photoHeight)
+
+                Color.clear
                     .frame(width: cardWidth, height: PolaroidLayout.captionHeight)
             }
             .padding(.top, PolaroidLayout.border)
@@ -101,52 +111,234 @@ struct PolaroidCardView: View {
                 cardSize: cardContentSize
             )
             .frame(width: cardContentSize.width, height: cardContentSize.height)
+            .zIndex(1)
+
+            VStack(spacing: 0) {
+                Color.clear
+                    .frame(height: PolaroidLayout.border + photoHeight)
+                    .allowsHitTesting(false)
+
+                captionArea
+                    .frame(width: cardWidth, height: PolaroidLayout.captionHeight)
+
+                Color.clear
+                    .frame(height: PolaroidLayout.border + 6)
+                    .allowsHitTesting(false)
+            }
+            .frame(width: cardContentSize.width, height: cardContentSize.height)
+            .zIndex(2)
         }
         .frame(width: cardContentSize.width, height: cardContentSize.height)
         .shadow(color: .black.opacity(0.28), radius: 10, y: 6)
+    }
+
+    @ViewBuilder
+    private var photoArea: some View {
+        let tapHandler = {
+            selectedStickerID = nil
+            isEditingCaption = false
+        }
+
+        if photoIsCircular {
+            ZStack {
+                Color.white
+                Image(nsImage: photo)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: circularPhotoDiameter, height: circularPhotoDiameter)
+                    .clipShape(Circle())
+            }
+            .frame(width: cardWidth, height: photoHeight)
+            .contentShape(Rectangle())
+            .onTapGesture(perform: tapHandler)
+        } else {
+            Image(nsImage: photo)
+                .resizable()
+                .scaledToFill()
+                .frame(width: cardWidth, height: photoHeight)
+                .clipped()
+                .contentShape(Rectangle())
+                .onTapGesture(perform: tapHandler)
+        }
     }
 
     private var captionArea: some View {
         PolaroidCaptionEditor(
             text: $caption,
             isEditing: $isEditingCaption,
-            fontSize: captionFontSize
+            fontSize: PolaroidLayout.captionFontSize(for: cardWidth)
         )
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, 8)
-    }
-
-    private var captionFontSize: CGFloat {
-        cardWidth > 280 ? 16 : 14
+        .padding(.horizontal, 4)
     }
 }
 
-struct PolaroidEmojiPicker: View {
-    let onPick: (String) -> Void
+enum PolaroidEmojiLibrary {
+    enum Category: String, CaseIterable, Identifiable {
+        case recents
+        case smileys
+        case animals
+        case food
+        case activities
+        case travel
+        case objects
+        case symbols
+        case flags
 
-    private let emojis = [
-        "😀", "😂", "🥰", "😎", "🤩", "😊",
-        "👍", "👏", "🙌", "💪", "✌️", "🤘",
-        "❤️", "🧡", "💛", "💚", "💙", "💜",
-        "🔥", "✨", "⭐", "🎉", "🎊", "💯",
-        "📸", "🌈", "☀️", "🌙", "⚡", "💫",
-    ]
+        var id: String { rawValue }
 
-    var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 6), spacing: 6) {
-            ForEach(emojis, id: \.self) { emoji in
-                Button {
-                    onPick(emoji)
-                } label: {
-                    Text(emoji)
-                        .font(.title2)
-                        .frame(width: 32, height: 32)
-                }
-                .buttonStyle(.plain)
+        var systemImage: String {
+            switch self {
+            case .recents: return "clock"
+            case .smileys: return "face.smiling"
+            case .animals: return "dog"
+            case .food: return "fork.knife"
+            case .activities: return "sportscourt"
+            case .travel: return "car"
+            case .objects: return "lightbulb"
+            case .symbols: return "heart"
+            case .flags: return "flag"
             }
         }
-        .padding(10)
-        .frame(width: 240)
+    }
+
+    struct Entry: Identifiable {
+        let emoji: String
+        let keywords: [String]
+        let category: Category
+
+        var id: String { emoji }
+
+        init(emoji: String, keywords: [String], category: Category = .symbols) {
+            self.emoji = emoji
+            self.keywords = keywords
+            self.category = category
+        }
+    }
+
+    static var all: [Entry] { PolaroidEmojiData.all }
+
+    static func entries(for category: Category) -> [Entry] {
+        all.filter { $0.category == category }
+    }
+
+    static func matches(_ entry: Entry, query: String) -> Bool {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !q.isEmpty else { return true }
+        if entry.emoji.contains(q) { return true }
+        return entry.keywords.contains { keyword in
+            keyword.contains(q) || q.contains(keyword)
+        }
+    }
+}
+
+struct PolaroidEmojiSearchPicker: View {
+    let onPick: (String) -> Void
+
+    @AppStorage("polaroidEmojiRecents") private var recentsStorage = ""
+    @State private var query = ""
+    @State private var selectedCategory: PolaroidEmojiLibrary.Category = .recents
+
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 8)
+
+    private var recents: [String] {
+        recentsStorage.split(separator: "|").map(String.init).filter { !$0.isEmpty }
+    }
+
+    private var results: [PolaroidEmojiLibrary.Entry] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty {
+            return PolaroidEmojiLibrary.all.filter { PolaroidEmojiLibrary.matches($0, query: trimmed) }
+        }
+        if selectedCategory == .recents {
+            let lookup = Dictionary(uniqueKeysWithValues: PolaroidEmojiLibrary.all.map { ($0.emoji, $0) })
+            return recents.compactMap { lookup[$0] }
+        }
+        return PolaroidEmojiLibrary.entries(for: selectedCategory)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search", text: $query)
+                    .textFieldStyle(.plain)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(white: 0.22), in: RoundedRectangle(cornerRadius: 8))
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
+            .padding(.bottom, 8)
+
+            ScrollView {
+                if results.isEmpty {
+                    Text(selectedCategory == .recents ? "No recent emojis" : "No emojis")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
+                } else {
+                    LazyVGrid(columns: columns, spacing: 2) {
+                        ForEach(results) { entry in
+                            Button {
+                                recordRecent(entry.emoji)
+                                onPick(entry.emoji)
+                            } label: {
+                                Text(entry.emoji)
+                                    .font(.system(size: 24))
+                                    .frame(width: 34, height: 34)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 8)
+                }
+            }
+            .frame(height: 300)
+
+            Divider().opacity(0.35)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 4) {
+                    ForEach(PolaroidEmojiLibrary.Category.allCases) { category in
+                        Button {
+                            selectedCategory = category
+                            query = ""
+                        } label: {
+                            Image(systemName: category.systemImage)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(selectedCategory == category ? .primary : .secondary)
+                                .frame(width: 32, height: 28)
+                                .background(
+                                    selectedCategory == category
+                                        ? Color.white.opacity(0.18)
+                                        : Color.clear,
+                                    in: RoundedRectangle(cornerRadius: 6)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+            }
+        }
+        .frame(width: 340)
+        .background(Color(white: 0.16))
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .onAppear(perform: applyDefaultCategory)
+    }
+
+    private func applyDefaultCategory() {
+        selectedCategory = recents.isEmpty ? .smileys : .recents
+    }
+
+    private func recordRecent(_ emoji: String) {
+        var updated = recents.filter { $0 != emoji }
+        updated.insert(emoji, at: 0)
+        recentsStorage = updated.prefix(32).joined(separator: "|")
     }
 }
 
@@ -162,11 +354,17 @@ struct PolaroidEjectStack: View {
         PolaroidLayout.cardHeight(for: capture.cardWidth)
     }
 
+    private var slotHeight: CGFloat {
+        PolaroidLayout.slotHeight(for: capture.cardWidth)
+    }
+
     var body: some View {
         VStack(spacing: 10) {
             PolaroidCardView(
                 photo: capture.photo,
                 cardWidth: capture.cardWidth,
+                capturedAt: capture.capturedAt,
+                photoIsCircular: capture.photoIsCircular,
                 caption: $capture.caption,
                 isEditingCaption: $capture.isEditingCaption,
                 stickers: $capture.stickers,
@@ -188,7 +386,7 @@ struct PolaroidEjectStack: View {
                 .buttonStyle(.plain)
                 .help("Add emoji sticker")
                 .popover(isPresented: $showEmojiPicker, arrowEdge: .bottom) {
-                    PolaroidEmojiPicker { emoji in
+                    PolaroidEmojiSearchPicker { emoji in
                         addSticker(emoji)
                         showEmojiPicker = false
                     }
@@ -223,6 +421,7 @@ struct PolaroidEjectStack: View {
             .shadow(color: .black.opacity(0.18), radius: 6, y: 2)
             .padding(.horizontal, 4)
         }
+        .frame(height: slotHeight, alignment: .top)
         .offset(y: ejectOffset)
         .onAppear {
             if capture.ejectProgress < 1 {
@@ -246,9 +445,9 @@ struct PolaroidEjectStack: View {
             let hidden = -(totalHeight - peek)
             let ejected: CGFloat = 4
             return hidden + capture.ejectProgress * (ejected - hidden)
-        case .circleBottom:
-            // Rise up into the slot below the circle (positive offset tucks it out of view).
-            let hidden = totalHeight - peek
+        case .circleTopDown:
+            // Start tucked above the slot, drop down into place.
+            let hidden = -(totalHeight - peek)
             let ejected: CGFloat = 0
             return hidden + capture.ejectProgress * (ejected - hidden)
         }
@@ -259,26 +458,4 @@ struct PolaroidEjectStack: View {
             capture.ejectProgress = 1
         }
     }
-}
-
-struct PolaroidDragBlockingHost<Content: View>: NSViewRepresentable {
-    let content: Content
-
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    func makeNSView(context: Context) -> PolaroidDragBlockingHostingView<Content> {
-        PolaroidDragBlockingHostingView(rootView: content)
-    }
-
-    func updateNSView(_ nsView: PolaroidDragBlockingHostingView<Content>, context: Context) {
-        nsView.rootView = content
-    }
-}
-
-final class PolaroidDragBlockingHostingView<Content: View>: NSHostingView<Content> {
-    override var mouseDownCanMoveWindow: Bool { false }
-
-    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 }
