@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "A-ember-deep-sunrise-soft",
+    "bg": "#8A2A1C",
+    "letter": "#F5C84B",
+    "label": "Ember Deep + Sunrise Soft (your pick)",
+    "shapes": "#000000"
+  },
+  {
+    "slug": "B-ink-deep-sunrise-soft",
+    "bg": "#1A1A3A",
+    "letter": "#F5C84B",
+    "label": "Ink Deep + Sunrise Soft",
+    "shapes": "#000000"
+  },
+  {
+    "slug": "C-paper-ink-t",
+    "bg": "#F5F0D3",
+    "letter": "#2B2B52",
+    "label": "Paper + Ink T",
+    "shapes": "#000000"
+  },
+  {
+    "slug": "D-ember-deep-paper",
+    "bg": "#8A2A1C",
+    "letter": "#F5F0D3",
+    "label": "Ember Deep + Paper T",
+    "shapes": "#000000"
+  },
+  {
+    "slug": "E-paper-sunrise",
+    "bg": "#F5F0D3",
+    "letter": "#E5A402",
+    "label": "Paper + Sunrise T",
+    "shapes": "#000000"
+  },
+  {
+    "slug": "F-white-black-white",
+    "bg": "#FFFFFF",
+    "letter": "#FFFFFF",
+    "label": "Original white bg",
+    "shapes": "#000000"
+  }
+]

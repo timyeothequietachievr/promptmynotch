@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "01-ink-deep-paper",
+    "bg": "#1A1A3A",
+    "fg": "#F5F0D3",
+    "label": "Ink Deep + Paper",
+    "description": "Classic TQA \u2014 deep navy with cream letter"
+  },
+  {
+    "slug": "02-ember-paper",
+    "bg": "#D54A2F",
+    "fg": "#FAF6E1",
+    "label": "Ember + Paper Soft",
+    "description": "Warm ember red with soft cream"
+  },
+  {
+    "slug": "03-ink-sunrise",
+    "bg": "#2B2B52",
+    "fg": "#E5A402",
+    "label": "Ink + Sunrise",
+    "description": "Ink background with golden sunrise accent"
+  },
+  {
+    "slug": "04-paper-ink",
+    "bg": "#F5F0D3",
+    "fg": "#2B2B52",
+    "label": "Paper + Ink",
+    "description": "Light cream icon for bright Dock / light mode"
+  },
+  {
+    "slug": "05-ember-deep-sunrise",
+    "bg": "#8A2A1C",
+    "fg": "#F5C84B",
+    "label": "Ember Deep + Sunrise Soft",
+    "description": "Rich ember with golden highlight"
+  },
+  {
+    "slug": "06-charcoal-paper",
+    "bg": "#1E1E1E",
+    "fg": "#F5F0D3",
+    "label": "Charcoal + Paper",
+    "description": "Closest to your original black + cream"
+  }
+]

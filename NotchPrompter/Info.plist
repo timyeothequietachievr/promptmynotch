@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>NotchPrompter</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.notchprompter.app</string>
+    <key>CFBundleName</key>
+    <string>NotchPrompter</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>2</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>NSCameraUsageDescription</key>
+    <string>NotchPrompter shows a camera mirror window so you can see yourself while presenting or recording.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>NotchPrompter uses your microphone to listen as you speak your script line by line.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>NotchPrompter reads your browser URL to follow Google Slides presenter mode and sync speaker notes.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>NotchPrompter uses speech recognition to detect when you finish each line and scroll to the next.</string>
+    <key>GoogleClientID</key>
+    <string></string>
+    <key>NSCameraReactionEffectsEnabled</key>
+    <true/>
+    <key>NSCameraReactionEffectGesturesEnabledDefault</key>
+    <true/>
+</dict>
+</plist>

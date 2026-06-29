@@ -1,0 +1,498 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* NotchPrompterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* NotchPrompterApp.swift */; };
+		A10000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* AppDelegate.swift */; };
+		A10000000000000000000003 /* SlideNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* SlideNote.swift */; };
+		A10000000000000000000004 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* Script.swift */; };
+		A10000000000000000000005 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* AppState.swift */; };
+		A10000000000000000000006 /* ScriptStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* ScriptStore.swift */; };
+		A10000000000000000000007 /* GoogleSlidesURLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* GoogleSlidesURLParser.swift */; };
+		A10000000000000000000008 /* GoogleOAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* GoogleOAuthService.swift */; };
+		A10000000000000000000009 /* GoogleSlidesImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* GoogleSlidesImporter.swift */; };
+		A1000000000000000000000A /* KeynoteImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* KeynoteImporter.swift */; };
+		A1000000000000000000000B /* PPTXImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* PPTXImporter.swift */; };
+		A1000000000000000000000C /* PresentationImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* PresentationImportService.swift */; };
+		A1000000000000000000000D /* PrompterLineLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* PrompterLineLayout.swift */; };
+		A10000000000000000000022 /* SpeechLineScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000024 /* SpeechLineScroller.swift */; };
+		A10000000000000000000023 /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000025 /* Speech.framework */; };
+		A1000000000000000000000E /* ScrollEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* ScrollEngine.swift */; };
+		A1000000000000000000000F /* PrompterPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* PrompterPanel.swift */; };
+		A10000000000000000000010 /* PrompterWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* PrompterWindowController.swift */; };
+		A10000000000000000000011 /* ImportPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* ImportPanelView.swift */; };
+		A10000000000000000000012 /* GoogleSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* GoogleSetupView.swift */; };
+		A10000000000000000000013 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* EditorView.swift */; };
+		A10000000000000000000014 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* SettingsView.swift */; };
+		A10000000000000000000015 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* MenuBarView.swift */; };
+		A10000000000000000000016 /* PrompterContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* PrompterContainerView.swift */; };
+		A10000000000000000000017 /* PrompterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000017 /* PrompterView.swift */; };
+		A10000000000000000000018 /* PresentationLifecycleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000018 /* PresentationLifecycleView.swift */; };
+		A10000000000000000000019 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001B /* AppRootView.swift */; };
+		A1000000000000000000001A /* RichTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001C /* RichTextEditor.swift */; };
+		A1000000000000000000001B /* OAuthLoopbackServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001D /* OAuthLoopbackServer.swift */; };
+		A1000000000000000000001C /* BrowserDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001E /* BrowserDiscovery.swift */; };
+		A1000000000000000000001D /* BrowserPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001F /* BrowserPickerView.swift */; };
+		A1000000000000000000001E /* BrowserURLReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000020 /* BrowserURLReader.swift */; };
+		A1000000000000000000001F /* GoogleSlidesPresenterMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000021 /* GoogleSlidesPresenterMonitor.swift */; };
+		A10000000000000000000020 /* NewScriptSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000022 /* NewScriptSheet.swift */; };
+		A10000000000000000000026 /* PrompterTextTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000026 /* PrompterTextTokenizer.swift */; };
+		A10000000000000000000027 /* PresenterAccessibilityReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000027 /* PresenterAccessibilityReader.swift */; };
+		A10000000000000000000028 /* SlideSyncPermissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000028 /* SlideSyncPermissions.swift */; };
+		A10000000000000000000029 /* SlideSyncPermissionsSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000029 /* SlideSyncPermissionsSettingsSection.swift */; };
+		A1000000000000000000002A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000002A /* Assets.xcassets */; };
+		A1000000000000000000002B /* GoogleSlidesSlideIndexCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000002B /* GoogleSlidesSlideIndexCache.swift */; };
+		A10000000000000000000030 /* CameraMirrorShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000030 /* CameraMirrorShape.swift */; };
+		A10000000000000000000031 /* CameraMirrorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000031 /* CameraMirrorService.swift */; };
+		A10000000000000000000032 /* CameraMirrorPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000032 /* CameraMirrorPanel.swift */; };
+		A10000000000000000000033 /* CameraMirrorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000033 /* CameraMirrorWindowController.swift */; };
+		A10000000000000000000034 /* CameraMirrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000034 /* CameraMirrorView.swift */; };
+		A10000000000000000000035 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000035 /* CameraPreviewView.swift */; };
+		A10000000000000000000036 /* CameraMirrorSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000036 /* CameraMirrorSettings.swift */; };
+		A10000000000000000000037 /* CameraMirrorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000037 /* CameraMirrorSettingsView.swift */; };
+		A10000000000000000000038 /* PrompterTextColorPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000038 /* PrompterTextColorPanel.swift */; };
+		A10000000000000000000039 /* GoogleSlidesNotesUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000039 /* GoogleSlidesNotesUpdater.swift */; };
+		A1000000000000000000003A /* CameraFrameCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003A /* CameraFrameCapture.swift */; };
+		A1000000000000000000003B /* CameraReactionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003B /* CameraReactionMonitor.swift */; };
+		A1000000000000000000003C /* PolaroidFlowViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003C /* PolaroidFlowViews.swift */; };
+		A1000000000000000000003D /* PolaroidInteractionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003D /* PolaroidInteractionViews.swift */; };
+		A1000000000000000000003E /* PrompterTextMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003E /* PrompterTextMetrics.swift */; };
+		A1000000000000000000003F /* PrompterHostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000003F /* PrompterHostingView.swift */; };
+		A10000000000000000000040 /* PrompterWordDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000040 /* PrompterWordDisplay.swift */; };
+		A10000000000000000000041 /* PrompterInteractionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000041 /* PrompterInteractionView.swift */; };
+		A10000000000000000000044 /* PrompterSlideEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000044 /* PrompterSlideEditor.swift */; };
+		A10000000000000000000042 /* PrompterClickRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000042 /* PrompterClickRouter.swift */; };
+		A10000000000000000000043 /* PrompterInteractionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000043 /* PrompterInteractionState.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* NotchPrompterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchPrompterApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* SlideNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideNote.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* ScriptStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* GoogleSlidesURLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSlidesURLParser.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* GoogleOAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleOAuthService.swift; sourceTree = "<group>"; };
+		A20000000000000000000009 /* GoogleSlidesImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSlidesImporter.swift; sourceTree = "<group>"; };
+		A2000000000000000000000A /* KeynoteImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeynoteImporter.swift; sourceTree = "<group>"; };
+		A2000000000000000000000B /* PPTXImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPTXImporter.swift; sourceTree = "<group>"; };
+		A2000000000000000000000C /* PresentationImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationImportService.swift; sourceTree = "<group>"; };
+		A2000000000000000000000D /* PrompterLineLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterLineLayout.swift; sourceTree = "<group>"; };
+		A20000000000000000000024 /* SpeechLineScroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechLineScroller.swift; sourceTree = "<group>"; };
+		A20000000000000000000025 /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
+		A2000000000000000000000E /* ScrollEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollEngine.swift; sourceTree = "<group>"; };
+		A2000000000000000000000F /* PrompterPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterPanel.swift; sourceTree = "<group>"; };
+		A20000000000000000000010 /* PrompterWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterWindowController.swift; sourceTree = "<group>"; };
+		A20000000000000000000011 /* ImportPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportPanelView.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* GoogleSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSetupView.swift; sourceTree = "<group>"; };
+		A20000000000000000000013 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		A20000000000000000000016 /* PrompterContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterContainerView.swift; sourceTree = "<group>"; };
+		A20000000000000000000017 /* PrompterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterView.swift; sourceTree = "<group>"; };
+		A20000000000000000000018 /* PresentationLifecycleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationLifecycleView.swift; sourceTree = "<group>"; };
+		A2000000000000000000001B /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+		A2000000000000000000001C /* RichTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichTextEditor.swift; sourceTree = "<group>"; };
+		A2000000000000000000001D /* OAuthLoopbackServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthLoopbackServer.swift; sourceTree = "<group>"; };
+		A2000000000000000000001E /* BrowserDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserDiscovery.swift; sourceTree = "<group>"; };
+		A2000000000000000000001F /* BrowserPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserPickerView.swift; sourceTree = "<group>"; };
+		A20000000000000000000020 /* BrowserURLReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserURLReader.swift; sourceTree = "<group>"; };
+		A20000000000000000000021 /* GoogleSlidesPresenterMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSlidesPresenterMonitor.swift; sourceTree = "<group>"; };
+		A20000000000000000000022 /* NewScriptSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewScriptSheet.swift; sourceTree = "<group>"; };
+		A20000000000000000000026 /* PrompterTextTokenizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterTextTokenizer.swift; sourceTree = "<group>"; };
+		A20000000000000000000027 /* PresenterAccessibilityReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenterAccessibilityReader.swift; sourceTree = "<group>"; };
+		A20000000000000000000028 /* SlideSyncPermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideSyncPermissions.swift; sourceTree = "<group>"; };
+		A20000000000000000000029 /* SlideSyncPermissionsSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideSyncPermissionsSettingsSection.swift; sourceTree = "<group>"; };
+		A2000000000000000000002A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A2000000000000000000002B /* GoogleSlidesSlideIndexCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSlidesSlideIndexCache.swift; sourceTree = "<group>"; };
+		A20000000000000000000030 /* CameraMirrorShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorShape.swift; sourceTree = "<group>"; };
+		A20000000000000000000031 /* CameraMirrorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorService.swift; sourceTree = "<group>"; };
+		A20000000000000000000032 /* CameraMirrorPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorPanel.swift; sourceTree = "<group>"; };
+		A20000000000000000000033 /* CameraMirrorWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorWindowController.swift; sourceTree = "<group>"; };
+		A20000000000000000000034 /* CameraMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorView.swift; sourceTree = "<group>"; };
+		A20000000000000000000035 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		A20000000000000000000036 /* CameraMirrorSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorSettings.swift; sourceTree = "<group>"; };
+		A20000000000000000000037 /* CameraMirrorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraMirrorSettingsView.swift; sourceTree = "<group>"; };
+		A2000000000000000000003A /* CameraFrameCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFrameCapture.swift; sourceTree = "<group>"; };
+		A2000000000000000000003C /* PolaroidFlowViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidFlowViews.swift; sourceTree = "<group>"; };
+		A2000000000000000000003D /* PolaroidInteractionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolaroidInteractionViews.swift; sourceTree = "<group>"; };
+		A2000000000000000000003E /* PrompterTextMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterTextMetrics.swift; sourceTree = "<group>"; };
+		A2000000000000000000003F /* PrompterHostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterHostingView.swift; sourceTree = "<group>"; };
+		A20000000000000000000040 /* PrompterWordDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterWordDisplay.swift; sourceTree = "<group>"; };
+		A20000000000000000000041 /* PrompterInteractionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterInteractionView.swift; sourceTree = "<group>"; };
+		A20000000000000000000042 /* PrompterClickRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterClickRouter.swift; sourceTree = "<group>"; };
+		A20000000000000000000044 /* PrompterSlideEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterSlideEditor.swift; sourceTree = "<group>"; };
+		A20000000000000000000043 /* PrompterInteractionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterInteractionState.swift; sourceTree = "<group>"; };
+		A2000000000000000000003B /* CameraReactionMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraReactionMonitor.swift; sourceTree = "<group>"; };
+		A20000000000000000000039 /* GoogleSlidesNotesUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSlidesNotesUpdater.swift; sourceTree = "<group>"; };
+		A20000000000000000000038 /* PrompterTextColorPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrompterTextColorPanel.swift; sourceTree = "<group>"; };
+		A20000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2000000000000000000001A /* NotchPrompter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotchPrompter.entitlements; sourceTree = "<group>"; };
+		A30000000000000000000001 /* NotchPrompter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotchPrompter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A40000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A50000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A50000000000000000000002 /* NotchPrompter */,
+				A50000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A50000000000000000000002 /* NotchPrompter */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* NotchPrompterApp.swift */,
+				A20000000000000000000002 /* AppDelegate.swift */,
+				A50000000000000000000004 /* Models */,
+				A50000000000000000000005 /* Services */,
+				A50000000000000000000006 /* Windows */,
+				A50000000000000000000007 /* Views */,
+				A2000000000000000000002A /* Assets.xcassets */,
+				A20000000000000000000019 /* Info.plist */,
+				A2000000000000000000001A /* NotchPrompter.entitlements */,
+			);
+			path = NotchPrompter;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000001 /* NotchPrompter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000003 /* SlideNote.swift */,
+				A20000000000000000000004 /* Script.swift */,
+				A20000000000000000000005 /* AppState.swift */,
+				A20000000000000000000030 /* CameraMirrorShape.swift */,
+				A20000000000000000000036 /* CameraMirrorSettings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000006 /* ScriptStore.swift */,
+				A20000000000000000000007 /* GoogleSlidesURLParser.swift */,
+				A20000000000000000000008 /* GoogleOAuthService.swift */,
+				A20000000000000000000009 /* GoogleSlidesImporter.swift */,
+				A20000000000000000000039 /* GoogleSlidesNotesUpdater.swift */,
+				A2000000000000000000000A /* KeynoteImporter.swift */,
+				A2000000000000000000000B /* PPTXImporter.swift */,
+				A2000000000000000000000C /* PresentationImportService.swift */,
+				A2000000000000000000000D /* PrompterLineLayout.swift */,
+				A2000000000000000000003E /* PrompterTextMetrics.swift */,
+				A20000000000000000000040 /* PrompterWordDisplay.swift */,
+				A20000000000000000000042 /* PrompterClickRouter.swift */,
+				A20000000000000000000043 /* PrompterInteractionState.swift */,
+				A20000000000000000000026 /* PrompterTextTokenizer.swift */,
+				A20000000000000000000024 /* SpeechLineScroller.swift */,
+				A2000000000000000000000E /* ScrollEngine.swift */,
+				A2000000000000000000001D /* OAuthLoopbackServer.swift */,
+				A2000000000000000000001E /* BrowserDiscovery.swift */,
+				A20000000000000000000020 /* BrowserURLReader.swift */,
+				A20000000000000000000021 /* GoogleSlidesPresenterMonitor.swift */,
+				A20000000000000000000027 /* PresenterAccessibilityReader.swift */,
+				A20000000000000000000028 /* SlideSyncPermissions.swift */,
+				A2000000000000000000002B /* GoogleSlidesSlideIndexCache.swift */,
+				A20000000000000000000031 /* CameraMirrorService.swift */,
+				A2000000000000000000003A /* CameraFrameCapture.swift */,
+				A2000000000000000000003B /* CameraReactionMonitor.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000006 /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000F /* PrompterPanel.swift */,
+				A20000000000000000000010 /* PrompterWindowController.swift */,
+				A2000000000000000000003F /* PrompterHostingView.swift */,
+				A20000000000000000000032 /* CameraMirrorPanel.swift */,
+				A20000000000000000000033 /* CameraMirrorWindowController.swift */,
+				A20000000000000000000038 /* PrompterTextColorPanel.swift */,
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000007 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000011 /* ImportPanelView.swift */,
+				A20000000000000000000012 /* GoogleSetupView.swift */,
+				A20000000000000000000013 /* EditorView.swift */,
+				A20000000000000000000014 /* SettingsView.swift */,
+				A20000000000000000000015 /* MenuBarView.swift */,
+				A20000000000000000000016 /* PrompterContainerView.swift */,
+				A20000000000000000000017 /* PrompterView.swift */,
+				A20000000000000000000044 /* PrompterSlideEditor.swift */,
+				A20000000000000000000041 /* PrompterInteractionView.swift */,
+				A20000000000000000000034 /* CameraMirrorView.swift */,
+				A2000000000000000000003C /* PolaroidFlowViews.swift */,
+				A2000000000000000000003D /* PolaroidInteractionViews.swift */,
+				A20000000000000000000035 /* CameraPreviewView.swift */,
+				A20000000000000000000037 /* CameraMirrorSettingsView.swift */,
+				A20000000000000000000018 /* PresentationLifecycleView.swift */,
+				A2000000000000000000001B /* AppRootView.swift */,
+				A2000000000000000000001C /* RichTextEditor.swift */,
+				A2000000000000000000001F /* BrowserPickerView.swift */,
+				A20000000000000000000022 /* NewScriptSheet.swift */,
+				A20000000000000000000029 /* SlideSyncPermissionsSettingsSection.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A60000000000000000000001 /* NotchPrompter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A80000000000000000000003 /* Build configuration list for PBXNativeTarget "NotchPrompter" */;
+			buildPhases = (
+				A70000000000000000000001 /* Sources */,
+				A40000000000000000000001 /* Frameworks */,
+				A70000000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NotchPrompter;
+			productName = NotchPrompter;
+			productReference = A30000000000000000000001 /* NotchPrompter.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A90000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = A80000000000000000000001 /* Build configuration list for PBXProject "NotchPrompter" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A50000000000000000000001;
+			productRefGroup = A50000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A60000000000000000000001 /* NotchPrompter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A70000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000000000000000000002A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* NotchPrompterApp.swift in Sources */,
+				A10000000000000000000002 /* AppDelegate.swift in Sources */,
+				A10000000000000000000003 /* SlideNote.swift in Sources */,
+				A10000000000000000000004 /* Script.swift in Sources */,
+				A10000000000000000000005 /* AppState.swift in Sources */,
+				A10000000000000000000006 /* ScriptStore.swift in Sources */,
+				A10000000000000000000007 /* GoogleSlidesURLParser.swift in Sources */,
+				A10000000000000000000008 /* GoogleOAuthService.swift in Sources */,
+				A10000000000000000000009 /* GoogleSlidesImporter.swift in Sources */,
+				A10000000000000000000039 /* GoogleSlidesNotesUpdater.swift in Sources */,
+				A1000000000000000000000A /* KeynoteImporter.swift in Sources */,
+				A1000000000000000000000B /* PPTXImporter.swift in Sources */,
+				A1000000000000000000000C /* PresentationImportService.swift in Sources */,
+				A1000000000000000000000D /* PrompterLineLayout.swift in Sources */,
+				A1000000000000000000003E /* PrompterTextMetrics.swift in Sources */,
+				A10000000000000000000026 /* PrompterTextTokenizer.swift in Sources */,
+				A10000000000000000000022 /* SpeechLineScroller.swift in Sources */,
+				A1000000000000000000000E /* ScrollEngine.swift in Sources */,
+				A1000000000000000000000F /* PrompterPanel.swift in Sources */,
+				A10000000000000000000010 /* PrompterWindowController.swift in Sources */,
+				A1000000000000000000003F /* PrompterHostingView.swift in Sources */,
+				A10000000000000000000040 /* PrompterWordDisplay.swift in Sources */,
+				A10000000000000000000041 /* PrompterInteractionView.swift in Sources */,
+				A10000000000000000000042 /* PrompterClickRouter.swift in Sources */,
+				A10000000000000000000043 /* PrompterInteractionState.swift in Sources */,
+				A10000000000000000000011 /* ImportPanelView.swift in Sources */,
+				A10000000000000000000012 /* GoogleSetupView.swift in Sources */,
+				A10000000000000000000013 /* EditorView.swift in Sources */,
+				A10000000000000000000014 /* SettingsView.swift in Sources */,
+				A10000000000000000000015 /* MenuBarView.swift in Sources */,
+				A10000000000000000000016 /* PrompterContainerView.swift in Sources */,
+				A10000000000000000000017 /* PrompterView.swift in Sources */,
+				A10000000000000000000044 /* PrompterSlideEditor.swift in Sources */,
+				A10000000000000000000018 /* PresentationLifecycleView.swift in Sources */,
+				A10000000000000000000019 /* AppRootView.swift in Sources */,
+				A1000000000000000000001A /* RichTextEditor.swift in Sources */,
+				A1000000000000000000001B /* OAuthLoopbackServer.swift in Sources */,
+				A1000000000000000000001C /* BrowserDiscovery.swift in Sources */,
+				A1000000000000000000001D /* BrowserPickerView.swift in Sources */,
+				A1000000000000000000001E /* BrowserURLReader.swift in Sources */,
+				A1000000000000000000001F /* GoogleSlidesPresenterMonitor.swift in Sources */,
+				A10000000000000000000020 /* NewScriptSheet.swift in Sources */,
+				A10000000000000000000027 /* PresenterAccessibilityReader.swift in Sources */,
+				A10000000000000000000028 /* SlideSyncPermissions.swift in Sources */,
+				A10000000000000000000029 /* SlideSyncPermissionsSettingsSection.swift in Sources */,
+				A1000000000000000000002B /* GoogleSlidesSlideIndexCache.swift in Sources */,
+				A10000000000000000000030 /* CameraMirrorShape.swift in Sources */,
+				A10000000000000000000031 /* CameraMirrorService.swift in Sources */,
+				A1000000000000000000003A /* CameraFrameCapture.swift in Sources */,
+				A1000000000000000000003B /* CameraReactionMonitor.swift in Sources */,
+				A10000000000000000000032 /* CameraMirrorPanel.swift in Sources */,
+				A10000000000000000000033 /* CameraMirrorWindowController.swift in Sources */,
+				A10000000000000000000034 /* CameraMirrorView.swift in Sources */,
+				A1000000000000000000003C /* PolaroidFlowViews.swift in Sources */,
+				A1000000000000000000003D /* PolaroidInteractionViews.swift in Sources */,
+				A10000000000000000000035 /* CameraPreviewView.swift in Sources */,
+				A10000000000000000000036 /* CameraMirrorSettings.swift in Sources */,
+				A10000000000000000000037 /* CameraMirrorSettingsView.swift in Sources */,
+				A10000000000000000000038 /* PrompterTextColorPanel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AB0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AB0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		AB0000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NotchPrompter/NotchPrompter.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NotchPrompter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notchprompter.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AB0000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NotchPrompter/NotchPrompter.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NotchPrompter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notchprompter.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A80000000000000000000001 /* Build configuration list for PBXProject "NotchPrompter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB0000000000000000000001 /* Debug */,
+				AB0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A80000000000000000000003 /* Build configuration list for PBXNativeTarget "NotchPrompter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB0000000000000000000003 /* Debug */,
+				AB0000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A90000000000000000000001 /* Project object */;
+}
