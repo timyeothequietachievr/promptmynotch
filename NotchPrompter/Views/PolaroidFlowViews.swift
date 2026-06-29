@@ -28,6 +28,13 @@ struct PolaroidCaptureState {
     var selectedStickerID: UUID?
 }
 
+enum PolaroidEjectDirection {
+    /// Rectangle mode: card rises from below the video fold (negative Y offset).
+    case overlayUp
+    /// Circle mode: card sits at the bottom edge — only a small offset, never pulled into the circle.
+    case circleBottom
+}
+
 enum PolaroidLayout {
     static let border: CGFloat = 14
     static let captionHeight: CGFloat = 54
@@ -147,6 +154,7 @@ struct PolaroidEjectStack: View {
     @Binding var capture: PolaroidCaptureState
     let onCancel: () -> Void
     let onSave: () -> Void
+    var ejectDirection: PolaroidEjectDirection = .overlayUp
 
     @State private var showEmojiPicker = false
 
@@ -232,9 +240,18 @@ struct PolaroidEjectStack: View {
     private var ejectOffset: CGFloat {
         let peek: CGFloat = 20
         let totalHeight = cardHeight + PolaroidLayout.actionsHeight + 10
-        let hidden = -(totalHeight - peek)
-        let ejected: CGFloat = 4
-        return hidden + capture.ejectProgress * (ejected - hidden)
+
+        switch ejectDirection {
+        case .overlayUp:
+            let hidden = -(totalHeight - peek)
+            let ejected: CGFloat = 4
+            return hidden + capture.ejectProgress * (ejected - hidden)
+        case .circleBottom:
+            // Rise up into the slot below the circle (positive offset tucks it out of view).
+            let hidden = totalHeight - peek
+            let ejected: CGFloat = 0
+            return hidden + capture.ejectProgress * (ejected - hidden)
+        }
     }
 
     private func runEjectAnimation() {

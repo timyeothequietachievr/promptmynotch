@@ -20,8 +20,10 @@ final class PrompterTextColorPanel: NSObject {
             panel.color = NSColor(color)
         }
 
-        panel.orderFront(nil)
-        positionBelowPrompter(panel)
+        positionNearPrompter(panel)
+        NSApp.activate(ignoringOtherApps: true)
+        panel.orderFrontRegardless()
+        panel.makeKeyAndOrderFront(nil)
     }
 
     func hide() {
@@ -29,20 +31,30 @@ final class PrompterTextColorPanel: NSObject {
         onColorChange = nil
     }
 
-    private func positionBelowPrompter(_ panel: NSColorPanel) {
+    private func positionNearPrompter(_ panel: NSColorPanel) {
         guard let prompterFrame = PrompterWindowController.shared.prompterFrame else { return }
+        let screenFrame = NSScreen.screens.first(where: { $0.frame.intersects(prompterFrame) })?.visibleFrame
+            ?? NSScreen.main?.visibleFrame
+        guard let screen = screenFrame else { return }
 
-        DispatchQueue.main.async {
-            let size = panel.frame.size
-            let origin = NSPoint(
-                x: prompterFrame.midX - size.width / 2,
-                y: prompterFrame.minY - size.height
-            )
-            panel.setFrameOrigin(origin)
+        let size = panel.frame.size
+        var origin = NSPoint(
+            x: prompterFrame.midX - size.width / 2,
+            y: prompterFrame.minY - size.height - 10
+        )
+
+        if origin.y < screen.minY + 12 {
+            origin.y = prompterFrame.maxY + 10
         }
+
+        origin.x = min(max(origin.x, screen.minX + 8), screen.maxX - size.width - 8)
+        origin.y = min(max(origin.y, screen.minY + 8), screen.maxY - size.height - 8)
+        panel.setFrameOrigin(origin)
     }
 
     @objc private func colorChanged(_ sender: NSColorPanel) {
+        // Ignore late close/reset events that can fire while the panel is dismissing.
+        guard sender.isVisible else { return }
         onColorChange?(sender.color)
     }
 }

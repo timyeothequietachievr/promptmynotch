@@ -51,30 +51,30 @@ struct Script: Identifiable, Codable, Hashable {
         return slides[clamped].text
     }
 
-    /// Text shown in the prompter for a slide — prefers per-slide notes, then script content.
+    /// Text shown in the prompter for a slide.
+    /// For multi-slide scripts, keep each slide isolated (empty slide stays empty).
     func presentationText(at slideIndex: Int) -> String {
         guard let slides, !slides.isEmpty else { return content }
 
         let clamped = min(max(0, slideIndex), slides.count - 1)
         let slideText = slides[clamped].text
+        if slides.count == 1 {
+            return slideText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? content : slideText
+        }
+
         if !slideText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return slideText
         }
 
+        // Legacy fallback: if per-slide text is empty but sectioned content has data, use that.
         let slideNumber = slides[clamped].slideNumber
-        if slides.count > 1,
-           let parsed = Self.parseSlideSection(from: content, slideNumber: slideNumber),
+        if let parsed = Self.parseSlideSection(from: content, slideNumber: slideNumber),
            !parsed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return parsed
         }
 
-        if slides.count == 1 {
-            return content
-        }
-
-        return content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            ? slideText
-            : content
+        // Important: do not fall back to full-deck content for empty slides.
+        return ""
     }
 
     static func combinedContent(from slides: [SlideNote]) -> String {
@@ -99,6 +99,43 @@ struct Script: Identifiable, Codable, Hashable {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
         return String(afterMarker).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    func withEditorContent(title: String, content: String, richContentRTF: Data?) -> Script {
+        var updated = self
+        updated.title = title
+        updated.content = content
+        updated.richContentRTF = richContentRTF?.isEmpty == true ? nil : richContentRTF
+        updated.updatedAt = .now
+
+        guard var slideList = updated.slides, !slideList.isEmpty else {
+            return updated
+        }
+
+        if slideList.count > 1 {
+            for index in slideList.indices {
+                let slideNumber = slideList[index].slideNumber
+                let text = Self.parseSlideSection(from: content, slideNumber: slideNumber) ?? ""
+                let existing = slideList[index]
+                slideList[index] = SlideNote(
+                    slideNumber: slideNumber,
+                    objectId: existing.objectId,
+                    speakerNotesObjectId: existing.speakerNotesObjectId,
+                    text: text
+                )
+            }
+        } else {
+            let existing = slideList[0]
+            slideList[0] = SlideNote(
+                slideNumber: existing.slideNumber,
+                objectId: existing.objectId,
+                speakerNotesObjectId: existing.speakerNotesObjectId,
+                text: content
+            )
+        }
+
+        updated.slides = slideList
+        return updated
     }
 
     func withUpdatedSlideText(at slideIndex: Int, text: String) -> Script {

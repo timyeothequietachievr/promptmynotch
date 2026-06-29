@@ -7,6 +7,10 @@ struct EditorView: View {
     @State private var draftContent = ""
     @State private var draftRTF = Data()
     @State private var isSyncingScript = false
+    @State private var isScriptEditing = false
+    @State private var preEditTitle = ""
+    @State private var preEditContent = ""
+    @State private var preEditRTF = Data()
 
     var body: some View {
         NavigationSplitView {
@@ -18,13 +22,9 @@ struct EditorView: View {
                     ForEach(appState.scripts) { script in
                         VStack(alignment: .leading, spacing: 2) {
                             Text(script.title).font(.headline)
-                            HStack {
-                                Text(script.source.rawValue)
-                                Text("·")
-                                Text(script.updatedAt, style: .relative)
-                            }
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            Text(script.source.rawValue)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                         .tag(script.id)
                         .contextMenu {
@@ -38,7 +38,7 @@ struct EditorView: View {
             }
             .navigationSplitViewColumnWidth(min: 220, ideal: 260)
             .toolbar {
-                ToolbarItem {
+                ToolbarItem(placement: .primaryAction) {
                     Button(action: { appState.openNewScriptPicker() }) {
                         Label("New", systemImage: "plus")
                     }
@@ -47,12 +47,6 @@ struct EditorView: View {
                     Button(action: { appState.showImportPanel.toggle() }) {
                         Label("Import", systemImage: "square.and.arrow.down")
                     }
-                }
-                ToolbarItem {
-                    Button(action: { appState.toggleCameraMirror() }) {
-                        Label("Camera", systemImage: "video.fill")
-                    }
-                    .help("Open camera mirror")
                 }
             }
         } detail: {
@@ -76,11 +70,27 @@ struct EditorView: View {
                 }
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: { appState.toggleCameraMirror(anchorToPrompter: appState.isPresenting) }) {
+                    PrompterToolbarStyle.editorFilledCircleIcon(
+                        systemName: "video.circle.fill",
+                        active: appState.cameraMirrorVisible
+                    )
+                }
+                .buttonStyle(.plain)
+                .help("Open camera mirror")
+            }
+        }
         .onAppear { syncDraftFromSelection() }
-        .onChange(of: appState.selectedScriptID) { _, _ in syncDraftFromSelection() }
-        .onChange(of: appState.scripts) { _, _ in syncDraftFromSelection() }
-        .onChange(of: appState.selectedScript?.updatedAt) { _, _ in syncDraftFromSelection() }
-        .onChange(of: appState.presentationSlideRevision) { _, _ in syncDraftFromSelection() }
+        .onChange(of: appState.selectedScriptID) { _, _ in
+            isScriptEditing = false
+            syncDraftFromSelection()
+        }
+        .onChange(of: appState.presentationSlideRevision) { _, _ in
+            guard !isScriptEditing else { return }
+            syncDraftFromSelection()
+        }
     }
 
     private var editorDetail: some View {
@@ -89,9 +99,8 @@ struct EditorView: View {
                 TextField("Title", text: $draftTitle)
                     .font(.title2.bold())
                     .textFieldStyle(.plain)
-                    .onSubmit { saveDraft() }
-
-                Spacer()
+                    .disabled(!isScriptEditing)
+                    .onSubmit { saveDraftNow() }
 
                 if let source = appState.selectedScript?.source, source != .manual {
                     Label(source.rawValue, systemImage: sourceIcon(source))
@@ -101,8 +110,27 @@ struct EditorView: View {
                         .background(.quaternary, in: Capsule())
                 }
 
+                Spacer()
+
+                if isScriptEditing {
+                    Button("Cancel") {
+                        cancelScriptEditing()
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button("Save") {
+                        saveScriptEditing()
+                    }
+                    .buttonStyle(.bordered)
+                } else {
+                    Button("Edit") {
+                        beginScriptEditing()
+                    }
+                    .buttonStyle(.bordered)
+                }
+
                 Button(appState.isPresenting ? "Stop" : "Present") {
-                    saveDraft()
+                    saveDraftNow()
                     if appState.isPresenting {
                         appState.stopPresentation()
                     } else {
@@ -116,21 +144,52 @@ struct EditorView: View {
             }
             .padding()
 
-            RichTextFormattingToolbar(textView: richTextController.textView)
+            RichTextFormattingToolbar(textView: isScriptEditing ? richTextController.textView : nil)
+                .opacity(isScriptEditing ? 1 : 0.45)
+                .allowsHitTesting(isScriptEditing)
 
             Divider()
 
-            RichTextEditor(controller: richTextController, rtfData: $draftRTF, plainText: $draftContent)
-                .id("\(appState.selectedScriptID?.uuidString ?? "none")-\(appState.selectedScript?.updatedAt.timeIntervalSinceReferenceDate ?? 0)")
-                .onChange(of: draftContent) { _, _ in
-                    guard !isSyncingScript else { return }
-                    saveDraft()
+            ZStack(alignment: .topLeading) {
+                RichTextEditor(
+                    controller: richTextController,
+                    rtfData: $draftRTF,
+                    plainText: $draftContent,
+                    isEditable: isScriptEditing
+                )
+
+                if !isScriptEditing {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            beginScriptEditing()
+                        }
                 }
-                .onChange(of: draftRTF) { _, _ in
-                    guard !isSyncingScript else { return }
-                    saveDraft()
-                }
+            }
         }
+    }
+
+    private func beginScriptEditing() {
+        preEditTitle = draftTitle
+        preEditContent = draftContent
+        preEditRTF = draftRTF
+        isScriptEditing = true
+        DispatchQueue.main.async {
+            richTextController.textView?.isEditable = true
+            richTextController.textView?.window?.makeFirstResponder(richTextController.textView)
+        }
+    }
+
+    private func cancelScriptEditing() {
+        draftTitle = preEditTitle
+        draftContent = preEditContent
+        draftRTF = preEditRTF
+        isScriptEditing = false
+    }
+
+    private func saveScriptEditing() {
+        saveDraftNow()
+        isScriptEditing = false
     }
 
     private func syncDraftFromSelection() {
@@ -142,8 +201,8 @@ struct EditorView: View {
         draftRTF = appState.selectedScript?.richContentRTF ?? Data()
     }
 
-    private func saveDraft() {
-        appState.updateSelectedScript(
+    private func saveDraftNow() {
+        appState.saveSelectedScriptEditorChanges(
             title: draftTitle,
             content: draftContent,
             richContentRTF: draftRTF

@@ -11,14 +11,22 @@ struct CameraMirrorView: View {
     @State private var showCaptureFlash = false
     @State private var polaroidSaveMessage: String?
     @State private var isPolaroidFlowActive = false
+    @State private var isPointerInsideWindow = false
 
     var body: some View {
         GeometryReader { geo in
+            let isCircle = appState.cameraMirrorShape.isCircle
+            let polaroidActive = polaroidCapture != nil
             let cardWidth = PolaroidLayout.cardWidth(for: geo.size.width)
-            let slotHeight = polaroidCapture != nil
+            let slotHeight = polaroidActive
                 ? PolaroidLayout.slotHeight(for: cardWidth)
                 : 0
-            let videoSize = CGSize(width: geo.size.width, height: max(120, geo.size.height - slotHeight))
+            let videoSize = CGSize(
+                width: geo.size.width,
+                height: isCircle
+                    ? geo.size.width
+                    : max(120, geo.size.height - slotHeight)
+            )
 
             ZStack(alignment: .top) {
                 VStack(spacing: 0) {
@@ -33,27 +41,22 @@ struct CameraMirrorView: View {
                     .frame(width: videoSize.width, height: videoSize.height)
                     .clipShape(contentClipShape)
 
-                    Color.clear
-                        .frame(height: slotHeight)
+                    if isCircle {
+                        if polaroidActive {
+                            polaroidSection(cardWidth: cardWidth, ejectDirection: .circleBottom)
+                                .frame(width: geo.size.width, alignment: .top)
+                        }
+                    } else {
+                        Color.clear
+                            .frame(height: slotHeight)
+                    }
                 }
 
-                if polaroidCapture != nil {
-                    PolaroidDragBlockingHost {
-                        PolaroidEjectStack(
-                            capture: Binding(
-                                get: {
-                                    polaroidCapture ?? PolaroidCaptureState(
-                                        photo: NSImage(),
-                                        cardWidth: cardWidth,
-                                        caption: ""
-                                    )
-                                },
-                                set: { polaroidCapture = $0 }
-                            ),
-                            onCancel: cancelPolaroid,
-                            onSave: savePolaroid
-                        )
-                    }
+                if !isCircle && polaroidActive {
+                    polaroidSection(
+                        cardWidth: cardWidth,
+                        ejectDirection: .overlayUp
+                    )
                     .frame(width: geo.size.width)
                     .padding(.top, videoSize.height - 12)
                     .zIndex(2)
@@ -63,6 +66,8 @@ struct CameraMirrorView: View {
                     controlBar
                         .padding(.horizontal, 14)
                         .padding(.top, 14)
+                        .opacity(controlsVisible ? 1 : 0)
+                        .allowsHitTesting(controlsVisible)
 
                     if let activeLabel = reactionMonitor.activeReactionLabel {
                         reactionBadge(label: activeLabel, systemImage: reactionMonitor.activeReactionSystemImage)
@@ -95,6 +100,7 @@ struct CameraMirrorView: View {
         }
         .background(Color.clear)
         .animation(.easeOut(duration: 0.12), value: showCaptureFlash)
+        .animation(.easeOut(duration: 0.2), value: controlsVisible)
         .task {
             cameraService.start()
             reactionMonitor.bind(to: cameraService)
@@ -103,11 +109,18 @@ struct CameraMirrorView: View {
         .onDisappear {
             reactionMonitor.stop()
             CameraMirrorWindowController.shared.setPolaroidEditingActive(false)
-            Task { await cameraService.stopAndWait() }
+            cameraService.stop()
         }
         .onChange(of: polaroidCapture != nil) { _, isEditing in
             CameraMirrorWindowController.shared.setPolaroidEditingActive(isEditing)
         }
+        .onHover { hovering in
+            isPointerInsideWindow = hovering
+        }
+    }
+
+    private var controlsVisible: Bool {
+        isPointerInsideWindow || isPolaroidFlowActive
     }
 
     @ViewBuilder
@@ -131,7 +144,7 @@ struct CameraMirrorView: View {
         switch appState.cameraMirrorShape {
         case .rectangle:
             AnyShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        case .circle:
+        case .bigCircle, .smallCircle:
             AnyShape(Circle())
         }
     }
@@ -146,25 +159,21 @@ struct CameraMirrorView: View {
                 startPolaroidFlow()
             } label: {
                 Image(systemName: "photo.on.rectangle.angled")
-                    .font(.caption.weight(.semibold))
-                    .frame(width: 28, height: 28)
-                    .background(.black.opacity(0.55), in: Circle())
-                    .foregroundStyle(.white)
+                    .cameraControlCircleIcon()
             }
             .buttonStyle(.plain)
             .help("Take Polaroid photo")
             .disabled(!cameraService.isRunning || isPolaroidFlowActive)
 
-            CameraReactionsMenu(reactionMonitor: reactionMonitor)
+            CameraReactionsPill(reactionMonitor: reactionMonitor)
 
             Button {
                 appState.toggleCameraMirrorFlip()
             } label: {
                 Image(systemName: "arrow.left.and.right.righttriangle.left.righttriangle.right")
-                    .font(.caption.weight(.semibold))
-                    .frame(width: 28, height: 28)
-                    .background(.black.opacity(0.55), in: Circle())
-                    .foregroundStyle(appState.cameraMirrorFlippedHorizontally ? Color.white : Color.white.opacity(0.55))
+                    .cameraControlCircleIcon(
+                        foreground: appState.cameraMirrorFlippedHorizontally ? .white : Color.white.opacity(0.55)
+                    )
             }
             .buttonStyle(.plain)
             .help("Flip horizontally")
@@ -197,7 +206,7 @@ struct CameraMirrorView: View {
             )
             .font(.caption.weight(.semibold))
             .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .frame(height: CameraControlBarMetrics.height)
             .background(.black.opacity(0.55), in: Capsule())
             .foregroundStyle(.white)
         }
@@ -212,6 +221,26 @@ struct CameraMirrorView: View {
             .padding(.vertical, 5)
             .background(.black.opacity(0.55), in: Capsule())
             .foregroundStyle(.white)
+    }
+
+    private func polaroidSection(cardWidth: CGFloat, ejectDirection: PolaroidEjectDirection) -> some View {
+        PolaroidDragBlockingHost {
+            PolaroidEjectStack(
+                capture: Binding(
+                    get: {
+                        polaroidCapture ?? PolaroidCaptureState(
+                            photo: NSImage(),
+                            cardWidth: cardWidth,
+                            caption: ""
+                        )
+                    },
+                    set: { polaroidCapture = $0 }
+                ),
+                onCancel: cancelPolaroid,
+                onSave: savePolaroid,
+                ejectDirection: ejectDirection
+            )
+        }
     }
 
     private func startPolaroidFlow() {
@@ -300,40 +329,90 @@ struct CameraMirrorView: View {
     }
 }
 
-private struct CameraReactionsMenu: View {
+private enum CameraControlBarMetrics {
+    static let height: CGFloat = 32
+}
+
+private struct CameraReactionsPill: View {
     @ObservedObject var reactionMonitor: CameraReactionMonitor
 
-    var body: some View {
-        Menu {
-            if reactionMonitor.canPerformReactions {
-                Text(reactionMonitor.gesturesEnabled ? "Gestures: On" : "Gestures: Off (Control Center)")
-                    .font(.caption)
-                Divider()
-                reactionButton("Thumbs Up", type: .thumbsUp)
-                reactionButton("Thumbs Down", type: .thumbsDown)
-                reactionButton("Balloons", type: .balloons)
-                reactionButton("Hearts", type: .heart)
-                reactionButton("Fireworks", type: .fireworks)
-                reactionButton("Confetti", type: .confetti)
-                reactionButton("Rain", type: .rain)
-                reactionButton("Lasers", type: .lasers)
-            } else {
-                Text("Reactions unavailable on this camera")
-            }
-        } label: {
-            Image(systemName: "sparkles")
-                .font(.caption.weight(.semibold))
-                .frame(width: 28, height: 28)
-                .background(.black.opacity(0.55), in: Circle())
-                .foregroundStyle(reactionMonitor.gesturesEnabled ? Color.yellow : Color.white.opacity(0.55))
-        }
-        .menuStyle(.borderlessButton)
-        .help("FaceTime reactions — hold gestures away from your face")
+    private var pillForeground: Color {
+        reactionMonitor.gesturesEnabled ? .white : Color.white.opacity(0.55)
     }
 
-    private func reactionButton(_ title: String, type: AVCaptureReactionType) -> some View {
-        Button(title) {
-            reactionMonitor.trigger(type)
+    private var mainLabel: String {
+        reactionMonitor.lastUsedReaction?.title ?? "Reactions"
+    }
+
+    private var mainSystemImage: String {
+        reactionMonitor.lastUsedReaction?.systemImage ?? "sparkles"
+    }
+
+    var body: some View {
+        Group {
+            if reactionMonitor.canPerformReactions {
+                HStack(spacing: 0) {
+                    Button {
+                        reactionMonitor.retriggerLast()
+                    } label: {
+                        HStack(spacing: 5) {
+                            Image(systemName: mainSystemImage)
+                                .font(.caption.weight(.semibold))
+                            Text(mainLabel)
+                                .font(.caption.weight(.semibold))
+                                .lineLimit(1)
+                        }
+                        .padding(.leading, 10)
+                        .padding(.trailing, 4)
+                        .frame(maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(reactionMonitor.lastUsedReaction == nil)
+
+                    Rectangle()
+                        .fill(Color.white.opacity(0.22))
+                        .frame(width: 1, height: 18)
+
+                    Menu {
+                        Text(reactionMonitor.gesturesEnabled ? "Gestures: On" : "Gestures: Off (Control Center)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Divider()
+                        ForEach(CameraReactionOption.all) { option in
+                            Button {
+                                reactionMonitor.trigger(option.type)
+                            } label: {
+                                Text(option.title)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10, weight: .bold))
+                            .frame(width: 24)
+                            .frame(maxHeight: .infinity)
+                            .contentShape(Rectangle())
+                    }
+                    .menuStyle(.borderlessButton)
+                    .menuIndicator(.hidden)
+                    .padding(.trailing, 4)
+                }
+                .frame(height: CameraControlBarMetrics.height)
+                .foregroundStyle(pillForeground)
+                .background(.black.opacity(0.55), in: Capsule())
+                .fixedSize()
+                .help(reactionMonitor.lastUsedReaction == nil
+                    ? "Choose a reaction from the menu"
+                    : "Replay \(mainLabel), or open the menu with the arrow")
+            } else {
+                Label("Reactions unavailable", systemImage: "sparkles")
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 10)
+                    .frame(height: CameraControlBarMetrics.height)
+                    .background(.black.opacity(0.55), in: Capsule())
+                    .foregroundStyle(Color.white.opacity(0.45))
+                    .fixedSize()
+            }
         }
     }
 }
@@ -345,25 +424,40 @@ private struct CameraMirrorShapeSwitch: View {
     var body: some View {
         HStack(spacing: 0) {
             segment(for: .rectangle, systemImage: "rectangle")
-            segment(for: .circle, systemImage: "circle")
+            segment(for: .bigCircle, systemImage: "circle")
+            segment(for: .smallCircle, systemImage: "smallcircle.filled.circle")
         }
-        .padding(3)
+        .padding(2)
+        .frame(height: CameraControlBarMetrics.height)
         .background(.black.opacity(0.55), in: Capsule())
     }
 
     private func segment(for option: CameraMirrorShape, systemImage: String) -> some View {
         let isSelected = shape == option
         return Button {
+            guard option.isSelectable else { return }
             onSelect(option)
         } label: {
             Image(systemName: systemImage)
-                .font(.caption.weight(.semibold))
-                .frame(width: 30, height: 24)
-                .foregroundStyle(isSelected ? Color.black : Color.white.opacity(0.75))
+                .font(.system(size: 14, weight: .semibold))
+                .frame(width: 34, height: CameraControlBarMetrics.height - 4)
+                .foregroundStyle(
+                    isSelected ? Color.black : Color.white.opacity(option.isSelectable ? 0.75 : 0.45)
+                )
                 .background(isSelected ? Color.white : Color.clear, in: Capsule())
         }
         .buttonStyle(.plain)
-        .help(option.label)
+        .disabled(!option.isSelectable)
+        .help(option.isSelectable ? option.label : "\(option.label) (coming soon)")
+    }
+}
+
+private extension View {
+    func cameraControlCircleIcon(foreground: Color = .white) -> some View {
+        font(.system(size: 16, weight: .semibold))
+            .frame(width: CameraControlBarMetrics.height, height: CameraControlBarMetrics.height)
+            .background(.black.opacity(0.55), in: Circle())
+            .foregroundStyle(foreground)
     }
 }
 

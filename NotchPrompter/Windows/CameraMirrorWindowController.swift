@@ -20,6 +20,8 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
     private var isApplyingSnap = false
     private var prompterAttachment: PrompterAttachment = .none
     private var frameBeforePolaroidEject: NSRect?
+    private var minSizeBeforePolaroidEject: NSSize?
+    private var maxSizeBeforePolaroidEject: NSSize?
 
     private static let originXKey = "camera_mirror_origin_x"
     private static let originYKey = "camera_mirror_origin_y"
@@ -34,16 +36,49 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
     func beginPolaroidEject(extraHeight: CGFloat) {
         guard let panel, frameBeforePolaroidEject == nil else { return }
         frameBeforePolaroidEject = panel.frame
+        minSizeBeforePolaroidEject = panel.minSize
+        maxSizeBeforePolaroidEject = panel.maxSize
+        panel.minSize = NSSize(width: panel.frame.width, height: panel.frame.height)
+        panel.maxSize = NSSize(width: 1600, height: 2000)
         var frame = panel.frame
         frame.size.height += extraHeight
         frame.origin.y -= extraHeight
+        isApplyingAspectLock = true
         panel.setFrame(frame, display: true)
+        isApplyingAspectLock = false
     }
 
     func endPolaroidEject() {
         guard let panel, let saved = frameBeforePolaroidEject else { return }
+        isApplyingAspectLock = true
         panel.setFrame(saved, display: true)
+        isApplyingAspectLock = false
+        if let minSizeBeforePolaroidEject, let maxSizeBeforePolaroidEject {
+            panel.minSize = minSizeBeforePolaroidEject
+            panel.maxSize = maxSizeBeforePolaroidEject
+        }
+        self.minSizeBeforePolaroidEject = nil
+        self.maxSizeBeforePolaroidEject = nil
         frameBeforePolaroidEject = nil
+    }
+
+    private func endPolaroidEjectOrCollapse() {
+        if frameBeforePolaroidEject != nil {
+            endPolaroidEject()
+            return
+        }
+
+        guard let panel else { return }
+        let shape = CameraMirrorShape.rectangle
+        guard panel.frame.height > shape.defaultSize.height * 1.35 else { return }
+
+        var frame = panel.frame
+        let delta = frame.height - shape.defaultSize.height
+        frame.size.height = shape.defaultSize.height
+        frame.origin.y += delta
+        isApplyingAspectLock = true
+        panel.setFrame(frame, display: true)
+        isApplyingAspectLock = false
     }
 
     func setPolaroidEditingActive(_ active: Bool) {
@@ -60,12 +95,15 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
 
     func show(appState: AppState, anchorToPrompter: Bool = false) {
         self.appState = appState
+        endPolaroidEjectOrCollapse()
+
         if panel == nil {
             createPanel(appState: appState)
         } else if let hostingView {
             hostingView.rootView = CameraMirrorView(appState: appState)
         }
         applySettings(appState: appState)
+        syncSizeToPrompterIfNeeded(appState: appState)
         if anchorToPrompter {
             if appState.cameraMirrorShape != .rectangle {
                 appState.setCameraMirrorShape(.rectangle)
@@ -79,9 +117,40 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
     }
 
     func hide() {
-        panel?.orderOut(nil)
         appState?.cameraMirrorVisible = false
+        panel?.orderOut(nil)
+        if let appState {
+            resetToDefaultState(appState: appState)
+        }
+    }
+
+    func resetToDefaultState(appState: AppState) {
+        discardPolaroidEjectState()
+        setPolaroidEditingActive(false)
+        appState.resetCameraMirrorToDefaults()
+        clearSavedRectangleDimensions()
+
+        panel = nil
+        hostingView = nil
         prompterAttachment = .none
+        lockedAspectRatio = nil
+    }
+
+    /// Drops polaroid expansion state without resizing the window (used when closing).
+    private func discardPolaroidEjectState() {
+        if let panel, let minSizeBeforePolaroidEject, let maxSizeBeforePolaroidEject {
+            panel.minSize = minSizeBeforePolaroidEject
+            panel.maxSize = maxSizeBeforePolaroidEject
+        }
+        frameBeforePolaroidEject = nil
+        minSizeBeforePolaroidEject = nil
+        maxSizeBeforePolaroidEject = nil
+    }
+
+    private func clearSavedRectangleDimensions() {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: Self.widthKey)
+        defaults.removeObject(forKey: Self.heightKey)
     }
 
     func toggle(appState: AppState, anchorToPrompter: Bool = false) {
@@ -97,10 +166,11 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
               let prompterFrame = PrompterWindowController.shared.prompterFrame else { return }
 
         let size = windowSize(for: appState)
-        let origin = NSPoint(
+        let rawOrigin = NSPoint(
             x: prompterFrame.maxX,
             y: prompterTopY(for: size)
         )
+        let origin = clampedOrigin(rawOrigin, size: size, in: targetScreen(for: appState).visibleFrame)
         panel.setFrame(NSRect(origin: origin, size: size), display: true)
         saveFrame(panel.frame)
     }
@@ -115,6 +185,18 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
         saveFrame(frame)
     }
 
+    func syncSizeToPrompterIfNeeded() {
+        guard let appState else { return }
+        syncSizeToPrompterIfNeeded(appState: appState)
+    }
+
+    private func syncSizeToPrompterIfNeeded(appState: AppState) {
+        guard appState.cameraMirrorVisible,
+              appState.cameraMirrorShape == .rectangle,
+              panel != nil else { return }
+        applyPrompterMatchedSize(appState: appState)
+    }
+
     func prompterDidMove() {
         guard prompterAttachment != .none,
               let panel,
@@ -122,7 +204,7 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
 
         let size: NSSize
         if appState?.cameraMirrorShape == .rectangle {
-            size = prompterMatchedRectangleSize(prompterFrame: prompterFrame)
+            size = prompterMatchedRectangleSize(prompterHeight: prompterFrame.height)
         } else {
             size = panel.frame.size
         }
@@ -162,7 +244,8 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
             )
         }
 
-        panel.setFrame(NSRect(origin: origin, size: size), display: true)
+        let clamped = clampedOrigin(origin, size: size, in: targetScreen(for: appState).visibleFrame)
+        panel.setFrame(NSRect(origin: clamped, size: size), display: true)
 
         if appState.cameraMirrorLockAspectRatio && shape == .rectangle {
             lockedAspectRatio = size.width / size.height
@@ -204,11 +287,12 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
             origin = appState.cameraMirrorSnapPosition.origin(for: size, in: screen.visibleFrame)
         }
 
-        return NSRect(origin: origin, size: size)
+        let clamped = clampedOrigin(origin, size: size, in: targetScreen(for: appState).visibleFrame)
+        return NSRect(origin: clamped, size: size)
     }
 
     private func resolvedSize(for appState: AppState, panel: NSWindow?) -> NSSize {
-        if appState.cameraMirrorShape == .circle, let panel {
+        if appState.cameraMirrorShape.isCircle, let panel {
             let side = clamp(
                 max(panel.frame.width, panel.frame.height),
                 min: appState.cameraMirrorShape.minSize.width,
@@ -223,20 +307,35 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
         switch appState.cameraMirrorShape {
         case .rectangle:
             return savedRectangleSize(for: appState)
-        case .circle:
+        case .bigCircle:
             let side = UserDefaults.standard.object(forKey: Self.circleSizeKey) as? Double
                 ?? Double(appState.cameraMirrorShape.defaultSize.width)
-            let clamped = clamp(CGFloat(side), min: appState.cameraMirrorShape.minSize.width, max: appState.cameraMirrorShape.maxSize.width)
+            let clamped = clamp(
+                CGFloat(side),
+                min: appState.cameraMirrorShape.minSize.width,
+                max: appState.cameraMirrorShape.maxSize.width
+            )
             return NSSize(width: clamped, height: clamped)
+        case .smallCircle:
+            return appState.cameraMirrorShape.defaultSize
         }
     }
 
     private func applyPrompterMatchedSize(appState: AppState) {
         guard appState.cameraMirrorShape == .rectangle,
-              let panel,
-              let prompterFrame = PrompterWindowController.shared.prompterFrame else { return }
+              let panel else { return }
 
-        let size = prompterMatchedRectangleSize(prompterFrame: prompterFrame)
+        let prompterHeight: CGFloat
+        if PrompterWindowController.shared.isPrompterVisible,
+           let prompterFrame = PrompterWindowController.shared.prompterFrame {
+            prompterHeight = prompterFrame.height
+        } else {
+            prompterHeight = PrompterWindowController.shared.referencePrompterHeight(
+                for: targetScreen(for: appState)
+            )
+        }
+
+        let size = prompterMatchedRectangleSize(prompterHeight: prompterHeight)
         var frame = panel.frame
         frame.size = size
         frame.origin.y = prompterTopY(for: size, fallbackY: frame.origin.y)
@@ -244,9 +343,9 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
         saveFrame(frame)
     }
 
-    private func prompterMatchedRectangleSize(prompterFrame: NSRect) -> NSSize {
+    private func prompterMatchedRectangleSize(prompterHeight: CGFloat) -> NSSize {
         let shape = CameraMirrorShape.rectangle
-        let height = clamp(prompterFrame.height, min: shape.minSize.height, max: shape.maxSize.height)
+        let height = clamp(prompterHeight, min: shape.minSize.height, max: shape.maxSize.height)
         let aspect = shape.defaultSize.height / shape.defaultSize.width
         let baseWidth = height / aspect
         let width = clamp(
@@ -335,19 +434,34 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
     }
 
     private func savedRectangleSize(for appState: AppState) -> NSSize {
+        let shape = CameraMirrorShape.rectangle
         let defaults = UserDefaults.standard
         let hasSavedSize = defaults.object(forKey: Self.widthKey) != nil
             || defaults.object(forKey: Self.heightKey) != nil
+        let referenceHeight = PrompterWindowController.shared.referencePrompterHeight(
+            for: targetScreen(for: appState)
+        )
 
-        if !hasSavedSize,
+        if PrompterWindowController.shared.isPrompterVisible,
            let prompterFrame = PrompterWindowController.shared.prompterFrame {
-            return prompterMatchedRectangleSize(prompterFrame: prompterFrame)
+            return prompterMatchedRectangleSize(prompterHeight: prompterFrame.height)
         }
 
-        let defaultSize = appState.cameraMirrorShape.defaultSize
+        if !hasSavedSize {
+            return prompterMatchedRectangleSize(prompterHeight: referenceHeight)
+        }
+
+        let defaultSize = shape.defaultSize
         let width = CGFloat(defaults.object(forKey: Self.widthKey) as? Double ?? Double(defaultSize.width))
-        let height = CGFloat(defaults.object(forKey: Self.heightKey) as? Double ?? Double(defaultSize.height))
-        let shape = appState.cameraMirrorShape
+        let rawHeight = CGFloat(defaults.object(forKey: Self.heightKey) as? Double ?? Double(defaultSize.height))
+        // Heights saved while a Polaroid was open are taller than a normal rectangle.
+        let height = rawHeight > shape.defaultSize.height * 1.35 ? shape.defaultSize.height : rawHeight
+
+        // Legacy/default camera height (240pt) — use prompter height instead.
+        if height <= shape.defaultSize.height * 1.1 {
+            return prompterMatchedRectangleSize(prompterHeight: referenceHeight)
+        }
+
         return NSSize(
             width: clamp(width, min: shape.minSize.width, max: shape.maxSize.width),
             height: clamp(height, min: shape.minSize.height, max: shape.maxSize.height)
@@ -355,6 +469,8 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
     }
 
     private func saveFrame(_ frame: NSRect) {
+        guard frameBeforePolaroidEject == nil else { return }
+
         let defaults = UserDefaults.standard
         defaults.set(Double(frame.origin.x), forKey: Self.originXKey)
         defaults.set(Double(frame.origin.y), forKey: Self.originYKey)
@@ -364,9 +480,11 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
         case .rectangle:
             defaults.set(Double(frame.size.width), forKey: Self.widthKey)
             defaults.set(Double(frame.size.height), forKey: Self.heightKey)
-        case .circle:
+        case .bigCircle:
             let side = min(frame.size.width, frame.size.height)
             defaults.set(Double(side), forKey: Self.circleSizeKey)
+        case .smallCircle:
+            break
         }
     }
 
@@ -374,14 +492,22 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
         Swift.min(maxValue, Swift.max(minValue, value))
     }
 
+    private func clampedOrigin(_ origin: NSPoint, size: NSSize, in visibleFrame: NSRect) -> NSPoint {
+        let x = min(max(origin.x, visibleFrame.minX), visibleFrame.maxX - size.width)
+        let y = min(max(origin.y, visibleFrame.minY), visibleFrame.maxY - size.height)
+        return NSPoint(x: x, y: y)
+    }
+
     func windowWillClose(_ notification: Notification) {
+        if let appState {
+            resetToDefaultState(appState: appState)
+        }
         Task { @MainActor in
             await CameraMirrorService.shared.stopAndWait()
         }
         appState?.cameraMirrorVisible = false
         panel = nil
         hostingView = nil
-        prompterAttachment = .none
     }
 
     func windowDidMove(_ notification: Notification) {
@@ -415,8 +541,9 @@ final class CameraMirrorWindowController: NSObject, NSWindowDelegate {
         isApplyingAspectLock = true
         var frame = panel.frame
 
-        if appState?.cameraMirrorShape == .circle {
-            let shape = CameraMirrorShape.circle
+        if appState?.cameraMirrorShape.isCircle == true,
+           frameBeforePolaroidEject == nil,
+           let shape = appState?.cameraMirrorShape {
             let side = clamp(max(frame.size.width, frame.size.height), min: shape.minSize.width, max: shape.maxSize.width)
             frame.size = NSSize(width: side, height: side)
             if prompterAttachment != .none, let prompterFrame = PrompterWindowController.shared.prompterFrame {

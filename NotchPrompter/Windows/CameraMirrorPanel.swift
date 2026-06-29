@@ -27,7 +27,9 @@ final class CameraMirrorPanel: NSPanel {
     }
 
     func configure(shape: CameraMirrorShape) {
-        styleMask = [.borderless, .fullSizeContentView, .resizable]
+        styleMask = shape == .rectangle
+            ? [.borderless, .fullSizeContentView, .resizable]
+            : [.borderless, .fullSizeContentView]
         level = Self.alwaysOnTopLevel
         hidesOnDeactivate = false
         isMovable = true
@@ -45,4 +47,5 @@ final class CameraMirrorPanel: NSPanel {
         standardWindowButton(.miniaturizeButton)?.isHidden = true
         standardWindowButton(.zoomButton)?.isHidden = true
     }
+
 }

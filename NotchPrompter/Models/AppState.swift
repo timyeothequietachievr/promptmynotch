@@ -77,11 +77,12 @@ final class AppState {
         if let savedColor = UserDefaults.standard.string(forKey: Self.textColorKey) {
             textColorHex = savedColor
         }
+        // Always start camera mirror in rectangle mode on app launch.
+        cameraMirrorShape = .rectangle
         if let savedShapeRaw = UserDefaults.standard.string(forKey: Self.cameraMirrorShapeKey) {
-            if savedShapeRaw == "smallCircle" || savedShapeRaw == "bigCircle" {
-                cameraMirrorShape = .circle
-            } else if let shape = CameraMirrorShape(rawValue: savedShapeRaw) {
-                cameraMirrorShape = shape
+            if savedShapeRaw == "circle" || savedShapeRaw == CameraMirrorShape.smallCircle.rawValue {
+                // Legacy / placeholder: map to big circle.
+                UserDefaults.standard.set(CameraMirrorShape.bigCircle.rawValue, forKey: Self.cameraMirrorShapeKey)
             }
         }
         if let savedWindowType = UserDefaults.standard.string(forKey: Self.cameraMirrorWindowTypeKey),
@@ -156,6 +157,25 @@ final class AppState {
         persist()
     }
 
+    /// Commits script editor changes locally and syncs speaker notes to Google Slides when linked.
+    func saveSelectedScriptEditorChanges(title: String, content: String, richContentRTF: Data) {
+        guard let script = selectedScript,
+              let index = scripts.firstIndex(where: { $0.id == script.id }) else { return }
+
+        let updated = script.withEditorContent(
+            title: title,
+            content: content,
+            richContentRTF: richContentRTF
+        )
+        scripts[index] = updated
+        persist()
+        presentationSlideRevision += 1
+
+        if isGoogleSlidesScript, googleSlidesSyncEnabled, let slides = updated.slides, !slides.isEmpty {
+            syncAllSpeakerNotesToGoogle(slides: slides)
+        }
+    }
+
     /// Saves edited speaker notes for the current slide from prompter edit mode.
     func savePresentationSlideText(at slideIndex: Int, text: String) {
         guard let script = selectedScript,
@@ -201,6 +221,34 @@ final class AppState {
                     newText: text,
                     accessToken: token
                 )
+                slidesSyncStatus = nil
+            } catch {
+                slidesSyncStatus = error.localizedDescription
+            }
+        }
+    }
+
+    private func syncAllSpeakerNotesToGoogle(slides: [SlideNote]) {
+        guard let script = selectedScript,
+              let presentationID = script.googlePresentationID else { return }
+
+        guard let token = GoogleOAuthService.shared.accessToken else {
+            slidesSyncStatus = "Sign in with Google to update speaker notes."
+            return
+        }
+
+        slidesSyncStatus = "Saving speaker notes…"
+        Task {
+            do {
+                let updater = GoogleSlidesNotesUpdater()
+                for slide in slides {
+                    try await updater.replaceSpeakerNotesText(
+                        presentationID: presentationID,
+                        slide: slide,
+                        newText: slide.text,
+                        accessToken: token
+                    )
+                }
                 slidesSyncStatus = nil
             } catch {
                 slidesSyncStatus = error.localizedDescription
@@ -307,6 +355,11 @@ final class AppState {
         UserDefaults.standard.set(hex, forKey: Self.textColorKey)
     }
 
+    func resetCameraMirrorToDefaults() {
+        cameraMirrorShape = .rectangle
+        UserDefaults.standard.set(CameraMirrorShape.rectangle.rawValue, forKey: Self.cameraMirrorShapeKey)
+    }
+
     func toggleCameraMirror(anchorToPrompter: Bool = false) {
         CameraMirrorWindowController.shared.toggle(appState: self, anchorToPrompter: anchorToPrompter)
     }
@@ -315,11 +368,14 @@ final class AppState {
         PrompterTextColorPanel.shared.show(currentHex: textColorHex) { [weak self] nsColor in
             guard let self else { return }
             let rgb = nsColor.usingColorSpace(.sRGB) ?? nsColor
+            let red = max(0, min(1, rgb.redComponent))
+            let green = max(0, min(1, rgb.greenComponent))
+            let blue = max(0, min(1, rgb.blueComponent))
             let hex = String(
                 format: "#%02X%02X%02X",
-                Int(round(rgb.redComponent * 255)),
-                Int(round(rgb.greenComponent * 255)),
-                Int(round(rgb.blueComponent * 255))
+                Int(round(red * 255)),
+                Int(round(green * 255)),
+                Int(round(blue * 255))
             )
             setTextColorHex(hex)
         }
@@ -330,6 +386,7 @@ final class AppState {
     }
 
     func setCameraMirrorShape(_ shape: CameraMirrorShape) {
+        guard shape.isSelectable else { return }
         let shapeChanged = cameraMirrorShape != shape
         cameraMirrorShape = shape
         UserDefaults.standard.set(shape.rawValue, forKey: Self.cameraMirrorShapeKey)

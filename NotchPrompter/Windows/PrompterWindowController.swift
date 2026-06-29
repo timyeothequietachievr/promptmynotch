@@ -40,6 +40,7 @@ final class PrompterWindowController: NSObject, NSWindowDelegate {
         positionAtNotch()
         panel?.orderFrontRegardless()
         installClickMonitor()
+        CameraMirrorWindowController.shared.syncSizeToPrompterIfNeeded()
     }
 
     func hide() {
@@ -65,6 +66,25 @@ final class PrompterWindowController: NSObject, NSWindowDelegate {
 
     var prompterFrame: NSRect? {
         panel?.frame
+    }
+
+    var isPrompterVisible: Bool {
+        panel?.isVisible == true
+    }
+
+    func referencePrompterHeight(for screen: NSScreen? = nil) -> CGFloat {
+        if let panel, panel.isVisible {
+            return panel.frame.height
+        }
+
+        let defaults = UserDefaults.standard
+        if let saved = defaults.object(forKey: Self.windowHeightKey) as? Double {
+            return CGFloat(saved)
+        }
+
+        let resolvedScreen = screen ?? NSScreen.main ?? NSScreen.screens[0]
+        let notchHeight = max(resolvedScreen.safeAreaInsets.top, 32)
+        return 200 + notchHeight
     }
 
     private func createPanel(appState: AppState) {

@@ -16,15 +16,24 @@ struct PrompterContainerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            PrompterWindowDragHandle()
+                .frame(maxWidth: .infinity)
+                .frame(height: 16)
+
             prompterToolbarChrome
 
             ZStack {
                 if let countdown = scrollEngine.countdown {
-                    Text("\(countdown)")
-                        .font(.system(size: 72, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.black.opacity(0.65))
+                    ZStack {
+                        Text("\(countdown)")
+                            .font(.system(size: 72, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(.black.opacity(0.65))
+
+                        PrompterWindowDragHandle()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 } else if isEditMode {
                     PrompterSlideEditor(
                         text: $editDraftText,
@@ -32,6 +41,8 @@ struct PrompterContainerView: View {
                         textColor: Color(hex: appState.textColorHex) ?? .white
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if appState.presentationText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    emptySpeakerNotesPrompt
                 } else {
                     PrompterView(
                         interaction: interactionState,
@@ -85,6 +96,7 @@ struct PrompterContainerView: View {
         .clipShape(NotchShape())
         .onAppear {
             wireSpeechScroller()
+            VoiceInputDeviceService.shared.refreshDevices()
             beginPresentation()
         }
         .onDisappear { endPresentation() }
@@ -129,14 +141,13 @@ struct PrompterContainerView: View {
 
     private var prompterToolbarChrome: some View {
         VStack(spacing: 4) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center, spacing: 8) {
                 HStack(spacing: 8) {
                     if appState.slideCount > 1 {
                         Text("Slide \(appState.currentSlideIndex + 1)/\(appState.slideCount)")
-                            .font(.caption2.weight(.semibold))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(.white.opacity(0.12), in: Capsule())
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .prompterToolbarCapsule()
                     }
 
                     PrompterTimerBar(timer: elapsedTimer)
@@ -145,10 +156,11 @@ struct PrompterContainerView: View {
                         Button {
                             enterEditMode()
                         } label: {
-                            Image(systemName: "pencil.circle.fill")
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(.white, .white.opacity(0.25))
-                                .prompterToolbarFilledCircleIcon()
+                            PrompterToolbarStyle.filledCircleIcon(
+                                systemName: "pencil.circle.fill",
+                                primary: .white,
+                                secondary: Color.white.opacity(0.28)
+                            )
                         }
                         .buttonStyle(.plain)
                         .help("Edit speaker notes")
@@ -156,6 +168,9 @@ struct PrompterContainerView: View {
                 }
 
                 Spacer(minLength: 0)
+                    .overlay {
+                        PrompterWindowDragHandle()
+                    }
 
                 HStack(spacing: 8) {
                     if isEditMode {
@@ -164,9 +179,13 @@ struct PrompterContainerView: View {
                         presentModeToolbar
                     }
                 }
+                .fixedSize(horizontal: true, vertical: false)
             }
             .padding(.horizontal, 12)
-            .padding(.top, 8)
+            .padding(.top, 4)
+            .background {
+                PrompterWindowDragHandle()
+            }
             .contentShape(Rectangle())
 
             if isEditMode {
@@ -176,8 +195,20 @@ struct PrompterContainerView: View {
                     .allowsHitTesting(false)
             }
 
-            VoiceLevelBar(level: speechScroller.level, isActive: speechScroller.isSpeaking)
-                .allowsHitTesting(false)
+            VoiceInputMeterBar(
+                level: speechScroller.level,
+                isActive: speechScroller.isSpeaking,
+                micSensitivity: appState.micSensitivity,
+                onDeviceChange: {
+                    Task {
+                        do {
+                            try await speechScroller.restart(sensitivity: appState.micSensitivity)
+                        } catch {
+                            voiceError = error.localizedDescription
+                        }
+                    }
+                }
+            )
                 .opacity(isEditMode ? 0.35 : 1)
 
             if let voiceError {
@@ -203,13 +234,11 @@ struct PrompterContainerView: View {
         Button {
             appState.toggleCameraMirror(anchorToPrompter: true)
         } label: {
-            Image(systemName: "video.circle.fill")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(
-                    appState.cameraMirrorVisible ? Color.green : .white,
-                    .white.opacity(0.25)
-                )
-                .prompterToolbarFilledCircleIcon()
+            PrompterToolbarStyle.filledCircleIcon(
+                systemName: "video.circle.fill",
+                primary: appState.cameraMirrorVisible ? .green : .white,
+                secondary: Color.white.opacity(0.28)
+            )
         }
         .buttonStyle(.plain)
         .help("Camera mirror")
@@ -217,10 +246,9 @@ struct PrompterContainerView: View {
         Button {
             appState.showTextColorPanel()
         } label: {
-            Image(systemName: "paintpalette.circle.fill")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(Color(hex: appState.textColorHex) ?? .white, .white.opacity(0.25))
-                .prompterToolbarFilledCircleIcon()
+            PrompterToolbarStyle.textColorCircleIcon(
+                color: Color(hex: appState.textColorHex) ?? .white
+            )
         }
         .buttonStyle(.plain)
         .help("Text color")
@@ -228,10 +256,11 @@ struct PrompterContainerView: View {
         Button {
             appState.adjustFontSize(by: -1)
         } label: {
-            Image(systemName: "minus.circle.fill")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(.white, .white.opacity(0.25))
-                .prompterToolbarFilledCircleIcon()
+            PrompterToolbarStyle.filledCircleIcon(
+                systemName: "minus.circle.fill",
+                primary: .white,
+                secondary: Color.white.opacity(0.28)
+            )
         }
         .buttonStyle(.plain)
         .disabled(appState.fontSize <= 12)
@@ -240,10 +269,11 @@ struct PrompterContainerView: View {
         Button {
             appState.adjustFontSize(by: 1)
         } label: {
-            Image(systemName: "plus.circle.fill")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(.white, .white.opacity(0.25))
-                .prompterToolbarFilledCircleIcon()
+            PrompterToolbarStyle.filledCircleIcon(
+                systemName: "plus.circle.fill",
+                primary: .white,
+                secondary: Color.white.opacity(0.28)
+            )
         }
         .buttonStyle(.plain)
         .disabled(appState.fontSize >= 48)
@@ -252,17 +282,47 @@ struct PrompterContainerView: View {
         Button {
             appState.stopPresentation()
         } label: {
-            Image(systemName: "xmark.circle.fill")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(.white, .white.opacity(0.25))
-                .prompterToolbarFilledCircleIcon()
+            PrompterToolbarStyle.filledCircleIcon(
+                systemName: "xmark.circle.fill",
+                primary: .white,
+                secondary: Color.white.opacity(0.28)
+            )
         }
         .buttonStyle(.plain)
         .help("Stop presentation")
     }
 
+    private var emptySpeakerNotesPrompt: some View {
+        VStack {
+            Spacer()
+            Button {
+                enterEditMode()
+            } label: {
+                Text("Click to add speaker notes")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 12)
+                    .background(.white.opacity(0.14), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     @ViewBuilder
     private var editModeToolbar: some View {
+        Button {
+            appState.showTextColorPanel()
+        } label: {
+            PrompterToolbarStyle.textColorCircleIcon(
+                color: Color(hex: appState.textColorHex) ?? .white
+            )
+        }
+        .buttonStyle(.plain)
+        .help("Text color")
+
         Button {
             cancelEditMode()
         } label: {
@@ -369,6 +429,48 @@ struct PrompterContainerView: View {
     }
 }
 
+struct VoiceInputMeterBar: View {
+    @ObservedObject private var deviceService = VoiceInputDeviceService.shared
+    let level: Float
+    let isActive: Bool
+    let micSensitivity: Double
+    let onDeviceChange: () -> Void
+
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: "mic.fill")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.7))
+
+                Menu {
+                    ForEach(deviceService.devices) { device in
+                        Button(device.name) {
+                            deviceService.selectDevice(uid: device.id)
+                            onDeviceChange()
+                        }
+                    }
+                    Divider()
+                    Button("Refresh microphones") {
+                        deviceService.refreshDevices()
+                    }
+                } label: {
+                    Text(deviceService.selectedDeviceName)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .lineLimit(1)
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .multilineTextAlignment(.center)
+
+            VoiceLevelBar(level: level, isActive: isActive)
+        }
+    }
+}
+
 struct VoiceLevelBar: View {
     let level: Float
     let isActive: Bool
@@ -447,16 +549,19 @@ struct PrompterTimerBar: View {
             Button {
                 timer.reset()
             } label: {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.85))
+                Image(systemName: "arrow.counterclockwise.circle.fill")
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, Color.white.opacity(0.28))
+                    .font(.system(size: 22))
             }
             .buttonStyle(.plain)
             .help("Reset timer")
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.leading, 10)
+        .padding(.trailing, 4)
+        .frame(height: 28)
         .background(.white.opacity(0.12), in: Capsule())
+        .fixedSize()
     }
 }
 
@@ -475,11 +580,6 @@ extension View {
         font(.caption.weight(.semibold))
             .frame(width: 28, height: 28)
             .background(.white.opacity(0.12), in: Circle())
-    }
-
-    fileprivate func prompterToolbarFilledCircleIcon() -> some View {
-        font(.system(size: 28))
-            .frame(width: 28, height: 28)
     }
 }
 

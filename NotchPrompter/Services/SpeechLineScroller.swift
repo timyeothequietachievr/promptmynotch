@@ -135,6 +135,18 @@ final class SpeechLineScroller: ObservableObject {
         silenceDeadline = nil
     }
 
+    func restart(sensitivity: Double) async throws {
+        let shouldRestart = isListening
+        stop()
+        if shouldRestart {
+            try await start(sensitivity: sensitivity)
+        }
+    }
+
+    var inputDeviceName: String {
+        VoiceInputDeviceService.shared.selectedDeviceName
+    }
+
     private func processTranscript(_ transcript: String) {
         guard !scriptWords.isEmpty else { return }
 

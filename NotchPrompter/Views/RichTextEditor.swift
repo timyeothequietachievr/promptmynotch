@@ -7,6 +7,7 @@ struct RichTextEditor: NSViewRepresentable {
     @ObservedObject var controller: RichTextEditorController
     @Binding var rtfData: Data
     @Binding var plainText: String
+    var isEditable: Bool = true
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -44,6 +45,8 @@ struct RichTextEditor: NSViewRepresentable {
         controller.textView = textView
 
         guard !context.coordinator.isUpdating else { return }
+        textView.isEditable = isEditable
+        textView.isSelectable = true
         if textView.string != plainText {
             loadContent(into: textView)
         }
@@ -74,12 +77,13 @@ struct RichTextEditor: NSViewRepresentable {
         func textDidChange(_ notification: Notification) {
             guard let textView = notification.object as? NSTextView else { return }
             isUpdating = true
-            defer { isUpdating = false }
-
             parent.plainText = textView.string
             let range = NSRange(location: 0, length: textView.textStorage?.length ?? 0)
             if let rtf = textView.rtf(from: range) {
                 parent.rtfData = rtf
+            }
+            DispatchQueue.main.async { [weak self] in
+                self?.isUpdating = false
             }
         }
     }

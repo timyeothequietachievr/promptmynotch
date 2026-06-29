@@ -58,7 +58,7 @@ struct CameraMirrorSettingsView: View {
                 get: { appState.cameraMirrorShape },
                 set: { appState.setCameraMirrorShape($0) }
             )) {
-                ForEach(CameraMirrorShape.allCases) { shape in
+                ForEach(CameraMirrorShape.allCases.filter(\.isSelectable)) { shape in
                     Label(shape.label, systemImage: shape.systemImage).tag(shape)
                 }
             }
