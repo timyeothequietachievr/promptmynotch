@@ -56,7 +56,7 @@ export const moodyFeatures: MoodyFeature[] = [
     title: "Positioned at your camera",
     description:
       "Speaker notes clip to the MacBook notch — right below your webcam. Better eye contact, more natural delivery.",
-    image: "/screenshots/camera-mirror.png",
+    image: "/screenshots/mirror-check.png",
     imageAlt: "Prompt My Notch at the MacBook notch",
     extra: false,
   },
@@ -93,7 +93,7 @@ export const moodyFeatures: MoodyFeature[] = [
     title: "Camera mirror",
     description:
       "A quick camera check from the prompter toolbar. Circle or rectangle, mirrored, snapped to a corner.",
-    image: "/screenshots/camera-mirror.png",
+    image: "/screenshots/mirror-check.png",
     imageAlt: "Camera mirror at the notch",
     extra: true,
   },
@@ -102,7 +102,7 @@ export const moodyFeatures: MoodyFeature[] = [
     title: "Polaroid capture",
     description:
       "Freeze a frame, eject a Polaroid card, add a caption and emoji stickers. Saves as PNG to your screenshots folder.",
-    image: "/screenshots/polaroid.png",
+    image: "/screenshots/polaroid-capture.png",
     imageAlt: "Polaroid capture with caption",
     extra: true,
   },

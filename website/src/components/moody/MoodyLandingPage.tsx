@@ -320,7 +320,15 @@ export function MoodyLandingPage() {
       </main>
 
       <footer className="moody-footer relative z-10 px-4 py-8 text-sm">
-        <p>Prompt My Notch · Layout inspired by Moody</p>
+        <p>Prompt My Notch</p>
+        <nav className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <a href="/privacy-policy" className="hover:underline">
+            Privacy Policy
+          </a>
+          <a href="/terms-of-service" className="hover:underline">
+            Terms of Service
+          </a>
+        </nav>
       </footer>
     </div>
   );

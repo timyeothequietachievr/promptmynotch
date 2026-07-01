@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { FeatureBlock } from "@/components/FeatureBlock";
 import { Faq } from "@/components/Faq";
+import { FeatureBlock } from "@/components/FeatureBlock";
+import { SiteFooter } from "@/components/SiteFooter";
 import { TqaNotchHero } from "@/components/TqaNotchHero";
 import { Button, Container, Eyebrow } from "@/components/ds/primitives";
 import {
@@ -235,12 +236,7 @@ export function LandingPage({ variant = defaultLandingVariant }: LandingPageProp
         </Container>
       </section>
 
-      <footer
-        className="border-t px-5 py-6 text-center font-reading text-sm"
-        style={{ borderColor: scheme.cardBorder, color: scheme.textMuted }}
-      >
-        Prompt My Notch
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

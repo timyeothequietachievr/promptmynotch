@@ -17,7 +17,6 @@ export const simpleFeatureIds = [
   "camera",
   "polaroid",
   "emoji",
-  "reactions",
   "edit",
 ] as const;
 

@@ -124,23 +124,18 @@ export const featureBlocks: FeatureBlockContent[] = [
   },
   {
     id: "slides-sync",
-    eyebrow: "Google Slides sync",
-    title: "Your browser advances. Your notes follow.",
+    title: "Google Slides sync",
     lead: "Presenting in Google Slides in the browser? Prompt My Notch reads which slide you're on and shows the matching speaker notes — automatically.",
     body: [
       "Make changes to your speaker notes and they are synced both ways.",
     ],
     bullets: [
       "Works in Chrome, Safari and more",
-      "Requires macOS Automation permission for your browser",
-      "Toggle: Follow Google Slides presenter mode in Settings",
-      "Clear status messages when permissions need attention",
     ],
   },
   {
     id: "camera",
-    eyebrow: "Camera mirror",
-    title: "A quick camera check, right from the prompter.",
+    title: "Mirror Check",
     lead: "Want to look your best? Use Mirror Check for a quick look and make sure nothing embarrassing is in frame.",
     bullets: [
       "Horizontal flip for a natural mirror view",
@@ -148,33 +143,28 @@ export const featureBlocks: FeatureBlockContent[] = [
       "Switch cameras",
     ],
     image: {
-      src: "/screenshots/camera-mirror.png",
-      alt: "Prompt My Notch circle camera mirror at the notch",
-      caption: "Circle mirror at the notch with device picker and reactions.",
+      src: "/screenshots/mirror-check.png",
+      alt: "Prompt My Notch Mirror Check camera preview",
     },
     reverse: true,
   },
   {
     id: "polaroid",
-    eyebrow: "Polaroid",
+    eyebrow: "Take a photo",
     title: "Save the moment",
-    lead: "Tap capture in the camera toolbar. The frame freezes, a Polaroid card ejects, and you get a white border, timestamp, and room for a handwritten-style caption.",
-    body: [
-      "In circle mode the print drops into the slot below the camera. Edit the caption strip, drag emoji stickers onto the photo, then Save or Cancel. Saved PNGs land in your macOS screenshots folder.",
-    ],
     bullets: [
       "Click to add captions",
       "Timestamp (in case you need proof of life 🤪)",
       "Add effects, emojis 🎉",
+      "Use Apple's built-in camera reaction effects — Thumbs up, peace sign & more",
     ],
     image: {
-      src: "/screenshots/polaroid.png",
+      src: "/screenshots/polaroid-capture.png",
       alt: "Prompt My Notch Polaroid capture with caption editing",
     },
   },
   {
     id: "emoji",
-    eyebrow: "Stickers",
     title: "Stickers, because why not.",
     body: [
       "Choose from 1,900 emojis",
@@ -193,7 +183,6 @@ export const featureBlocks: FeatureBlockContent[] = [
   },
   {
     id: "edit",
-    eyebrow: "Edit in place",
     title: "Fix a line without stopping the slideshow.",
     body: [
       "Snippet buttons below the editor insert keywords like --PAUSE-- at your cursor — handy for marking beats in your script.",
@@ -201,8 +190,7 @@ export const featureBlocks: FeatureBlockContent[] = [
     bullets: [
       "Per-slide editing during presentation",
       "ALL CAPS emphasis on double-click",
-      "Save pushes to Google Slides speaker notes",
-      "Snippet buttons for --PAUSE-- and more",
+      "Save changes to Google Slides speaker notes",
     ],
     reverse: true,
   },
@@ -247,7 +235,7 @@ export const faqs = [
     a: "Yes. It sits on a macOS layer that screen capture doesn't see. Zoom, Google Meets, Microsoft Teams — none of them pick it up.",
   },
   {
-    q: "Can I import from Google Slides and Keynote?",
+    q: "Can I import from Google Slides?",
     a: "Yes. Paste your Google Slides URL and off you go.",
   },
   {
