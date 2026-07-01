@@ -224,11 +224,7 @@ export function LandingPage({ variant = defaultLandingVariant }: LandingPageProp
               {content.download.lead}
             </p>
             <div className="mt-8">
-              <Button
-                href={content.download.macDownloadUrl}
-                variant={scheme.primaryButton}
-                size="lg"
-              >
+              <Button variant={scheme.primaryButton} size="lg">
                 Download for Mac
               </Button>
             </div>

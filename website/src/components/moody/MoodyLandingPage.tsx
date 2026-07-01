@@ -300,10 +300,10 @@ export function MoodyLandingPage() {
               {download.title}
             </h2>
             <p className="moody-hero-sub mb-8 text-lg">{download.lead}</p>
-            <a href="#" className="glass-cta">
+            <button type="button" className="glass-cta">
               <AppleIcon />
               <span>Download for Mac</span>
-            </a>
+            </button>
             <p className="moody-hero-sub mt-6 text-sm opacity-80">{download.note}</p>
           </div>
         </section>

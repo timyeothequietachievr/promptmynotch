@@ -9,7 +9,5 @@ website/node_modules/
 website/.next/
 GoogleOAuth.local.plist
 
-# Website — only ship the latest Mac build
-website/public/Prompt-My-Notch-*.zip
-!website/public/Prompt-My-Notch-0.4.1-macOS.zip
-website/public/NotchPrompter-*.zip
+# Website — do not commit Mac build artifacts
+website/public/**/*.zip

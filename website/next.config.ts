@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: false,
       },
+      {
+        source: "/:path(.*\\.zip)",
+        destination: "/404",
+        permanent: false,
+      },
     ];
   },
 };

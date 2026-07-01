@@ -78,7 +78,7 @@ export function TqaNotchHero({
               ))}
             </div>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Button href="#download" variant={scheme.primaryButton} size="lg">
+              <Button variant={scheme.primaryButton} size="lg">
                 Download for Mac
               </Button>
             </div>

@@ -18,12 +18,11 @@ export const hero = {
   subhead:
     "A teleprompter that stays invisible on screen share. No one will ever know.",
   pills: [
-    "Auto-scroll & hover pause",
-    "Hidden from screen share",
     "Google Slides sync",
+    "Hidden from screen share",
+    "Mirror Check",
   ],
 };
-
 export const intro = {
   question: "What's Prompt My Notch?",
   answer:
@@ -184,9 +183,6 @@ export const featureBlocks: FeatureBlockContent[] = [
   {
     id: "edit",
     title: "Fix a line without stopping the slideshow.",
-    body: [
-      "Snippet buttons below the editor insert keywords like --PAUSE-- at your cursor — handy for marking beats in your script.",
-    ],
     bullets: [
       "Per-slide editing during presentation",
       "ALL CAPS emphasis on double-click",
@@ -226,7 +222,6 @@ export const download = {
   title: "Forget forgetting your lines",
   lead: "The app is currently in beta (limited spots). Tell us what you'll use it for & download for free.",
   note: "Public beta · Camera optional · Google Slides sync · Keynote for .key import",
-  macDownloadUrl: "/Prompt-My-Notch-0.4.1-macOS.zip",
 };
 
 export const faqs = [
