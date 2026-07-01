@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import "@/styles/moody.css";
+import { MoodyDownloadButton } from "@/components/moody/MoodyDownloadButton";
 import { NotchHeader } from "@/components/moody/NotchHeader";
 import {
   download,
@@ -300,10 +301,7 @@ export function MoodyLandingPage() {
               {download.title}
             </h2>
             <p className="moody-hero-sub mb-8 text-lg">{download.lead}</p>
-            <button type="button" className="glass-cta">
-              <AppleIcon />
-              <span>Download for Mac</span>
-            </button>
+            <MoodyDownloadButton />
             <p className="moody-hero-sub mt-6 text-sm opacity-80">{download.note}</p>
           </div>
         </section>

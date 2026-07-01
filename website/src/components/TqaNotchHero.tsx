@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import "@/styles/moody.css";
-import { Button, Container } from "@/components/ds/primitives";
+import { Container } from "@/components/ds/primitives";
+import { DownloadForMacButton } from "@/components/DownloadForMacButton";
 import { NotchHeader } from "@/components/moody/NotchHeader";
 import type { LandingContent } from "@/lib/landing-content";
 import { hero as defaultHero } from "@/lib/content";
@@ -78,15 +79,19 @@ export function TqaNotchHero({
               ))}
             </div>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Button variant={scheme.primaryButton} size="lg">
-                Download for Mac
-              </Button>
+              <DownloadForMacButton variant={scheme.primaryButton} size="lg" />
             </div>
             <p
               className="mt-5 font-reading text-sm"
               style={{ color: scheme.textMuted }}
             >
-              macOS 14.0 or later
+              {hero.ctaNote}
+            </p>
+            <p
+              className="mt-1 font-reading text-xs"
+              style={{ color: scheme.textMuted, opacity: 0.72 }}
+            >
+              {hero.systemReq}
             </p>
           </div>
         </Container>

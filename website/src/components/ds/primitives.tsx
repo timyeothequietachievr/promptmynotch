@@ -58,12 +58,16 @@ export function Button({
   variant = "primary",
   size = "md",
   href,
+  target,
+  rel,
   className = "",
 }: {
   children: ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
   href?: string;
+  target?: string;
+  rel?: string;
   className?: string;
 }) {
   const base =
@@ -126,6 +130,8 @@ export function Button({
         href={href}
         className={classNames}
         style={styles[variant]}
+        target={target}
+        rel={rel ?? (target === "_blank" ? "noopener noreferrer" : undefined)}
         onMouseEnter={handleEnter}
         onMouseLeave={handleLeave}
       >

@@ -3,7 +3,8 @@ import { Faq } from "@/components/Faq";
 import { FeatureBlock } from "@/components/FeatureBlock";
 import { SiteFooter } from "@/components/SiteFooter";
 import { TqaNotchHero } from "@/components/TqaNotchHero";
-import { Button, Container, Eyebrow } from "@/components/ds/primitives";
+import { Container, Eyebrow } from "@/components/ds/primitives";
+import { DownloadForMacButton } from "@/components/DownloadForMacButton";
 import {
   emberLandingContent,
   privacy,
@@ -224,9 +225,7 @@ export function LandingPage({ variant = defaultLandingVariant }: LandingPageProp
               {content.download.lead}
             </p>
             <div className="mt-8">
-              <Button variant={scheme.primaryButton} size="lg">
-                Download for Mac
-              </Button>
+              <DownloadForMacButton variant={scheme.primaryButton} size="lg" />
             </div>
           </div>
         </Container>

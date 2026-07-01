@@ -16,8 +16,8 @@ export const moodyHero = {
   subhead:
     "Your speaker notes. Right next to your camera. Invisible to everyone but you.",
   cta: "Download for Mac",
-  ctaNote: "Free public beta · v0.4.1 · Apple Silicon & Intel",
-  systemReq: "macOS 14 or later",
+  ctaNote: hero.ctaNote,
+  systemReq: hero.systemReq,
 };
 
 export const moodySteps = steps.map((s) => ({
