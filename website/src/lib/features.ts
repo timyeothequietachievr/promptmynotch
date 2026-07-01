@@ -13,7 +13,7 @@ export const implementedFeatures: FeatureGroup[] = [
       "PowerPoint (.pptx) — import exported deck without Google sign-in",
       "Write / paste — blank rich-text script",
       "Scripts window — source badges, rich-text editor, Edit / Cancel / Save",
-      "Local storage — ~/Library/Application Support/NotchPrompter/",
+      "Local storage — ~/Library/Application Support/PromptMyNotch/",
     ],
   },
   {
@@ -22,11 +22,9 @@ export const implementedFeatures: FeatureGroup[] = [
       "Floating panel at the MacBook notch with notch-shaped clip",
       "Invisible to screen sharing (sharingType = .none)",
       "Auto-scroll — adjustable speed (10–200 px/s)",
-      "Voice-activated line scrolling with on-device speech recognition",
-      "Real-time word highlighting in voice mode",
       "Manual scroll, hover to pause, countdown before scroll (0–10 s)",
       "Toolbar — camera mirror, text colour, font size ±, edit, stop",
-      "Slide indicator, elapsed timer, mic level meter and input picker",
+      "Slide indicator, elapsed timer",
       "In-prompter editing; double-click word for ALL CAPS emphasis",
       "Edit-mode snippet buttons — insert keywords like --PAUSE-- at cursor",
       "Shortcuts — ⌘P present, ⌘↑↓ speed, ⌘+− size, ⌘N new script",
@@ -57,7 +55,7 @@ export const implementedFeatures: FeatureGroup[] = [
     title: "Menu bar & settings",
     items: [
       "Menu bar extra — script title, start/stop, open editor, quit",
-      "Scrolling defaults, voice activation toggle, mic sensitivity",
+      "Scrolling defaults and speed",
       "Camera window type, shape, and position options",
       "Google OAuth Client ID setup and sign out",
     ],
@@ -66,7 +64,6 @@ export const implementedFeatures: FeatureGroup[] = [
 
 export const requirements = [
   "macOS 14.0+",
-  "Microphone (voice scroll)",
   "Camera (optional — mirror & Polaroid)",
   "Keynote app (.key import only)",
   "Google Cloud OAuth client (live Slides import)",
@@ -76,5 +73,4 @@ export const privacyPoints = [
   "Scripts stored locally on your Mac after import",
   "Google Slides — read-only OAuth for import; write-back only when you Save",
   "Keynote import reads notes via AppleScript; does not modify the file",
-  "Speech recognition runs on-device for voice scrolling",
 ];

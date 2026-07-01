@@ -1,16 +1,17 @@
-import "./globals.css";
-import { LandingVariant } from "@/components/LandingVariant";
-import { colorSchemes } from "@/lib/themes";
+import type { Metadata } from "next";
+import { LandingPage } from "@/components/LandingPage";
+import { simpleLandingVariant } from "@/lib/landing-variants";
+
+export const metadata: Metadata = {
+  title: "Prompt My Notch — Never forget your lines again",
+  description:
+    "A teleprompter that stays invisible on screen share. Google Slides sync, camera mirror, and more. macOS public beta.",
+};
 
 export default function Home() {
   return (
     <main>
-      <div className="bg-charcoal px-5 py-4 text-center font-mono text-[11px] tracking-[0.14em] text-paper uppercase sm:px-8">
-        NotchPrompter website — 3 colour schemes (TQA design system)
-      </div>
-      {colorSchemes.map((scheme) => (
-        <LandingVariant key={scheme.id} scheme={scheme} />
-      ))}
+      <LandingPage variant={simpleLandingVariant} />
     </main>
   );
 }

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NotchPrompter — Colour scheme previews",
+  title: "Prompt My Notch — Never forget your lines again",
   description:
-    "NotchPrompter landing page previews using The Quiet Achiever design system.",
+    "A teleprompter that stays invisible on screen share. Google Slides sync, camera mirror, and more. macOS public beta.",
 };
 
 export default function RootLayout({
@@ -12,9 +12,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isMoodyRoot = process.env.LANDING_VARIANT === "moody";
+
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={isMoodyRoot ? "moody-root" : undefined}>{children}</body>
     </html>
   );
 }
