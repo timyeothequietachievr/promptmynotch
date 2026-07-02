@@ -1,6 +1,9 @@
 "use client";
 
+import { trackCtaClick, type CtaLocation } from "@/lib/analytics";
 import { getPayhipCheckoutUrl } from "@/lib/payhip-checkout";
+
+const CTA_LABEL = "Download for Mac";
 
 function AppleIcon() {
   return (
@@ -10,8 +13,24 @@ function AppleIcon() {
   );
 }
 
-export function MoodyDownloadButton() {
+type MoodyDownloadButtonProps = {
+  ctaLocation?: CtaLocation;
+};
+
+export function MoodyDownloadButton({
+  ctaLocation = "moody_download",
+}: MoodyDownloadButtonProps) {
   const checkoutUrl = getPayhipCheckoutUrl();
+
+  const handleClick = () => {
+    trackCtaClick({
+      ctaId: "download_mac",
+      ctaLabel: CTA_LABEL,
+      ctaLocation,
+      ctaAction: checkoutUrl ? "checkout" : "scroll",
+      destinationHref: checkoutUrl ?? "#download",
+    });
+  };
 
   if (checkoutUrl) {
     return (
@@ -20,17 +39,18 @@ export function MoodyDownloadButton() {
         className="glass-cta"
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleClick}
       >
         <AppleIcon />
-        <span>Download for Mac</span>
+        <span>{CTA_LABEL}</span>
       </a>
     );
   }
 
   return (
-    <button type="button" className="glass-cta">
+    <button type="button" className="glass-cta" onClick={handleClick}>
       <AppleIcon />
-      <span>Download for Mac</span>
+      <span>{CTA_LABEL}</span>
     </button>
   );
 }
