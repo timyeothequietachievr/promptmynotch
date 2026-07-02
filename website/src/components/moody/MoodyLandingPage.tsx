@@ -340,7 +340,26 @@ export function MoodyLandingPage() {
       </main>
 
       <footer className="moody-footer relative z-10 px-4 py-8 text-sm">
-        <p>Prompt My Notch</p>
+        <p>
+          Prompt My Notch ·{" "}
+          <a
+            href="https://www.thequietachievr.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:underline"
+            onClick={() => {
+              trackCtaClick({
+                ctaId: "the_quiet_achiever",
+                ctaLabel: "The Quiet Achiever",
+                ctaLocation: "footer_legal",
+                ctaAction: "navigate",
+                destinationHref: "https://www.thequietachievr.com/",
+              });
+            }}
+          >
+            The Quiet Achiever
+          </a>
+        </p>
         <nav className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
           <a
             href="/blog"

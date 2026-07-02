@@ -24,7 +24,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={isMoodyRoot ? "moody-root" : undefined}>
+      <body id="top" className={isMoodyRoot ? "moody-root" : undefined}>
         {gaMeasurementId ? (
           <GoogleAnalytics measurementId={gaMeasurementId} />
         ) : null}
