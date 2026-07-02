@@ -41,14 +41,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <div className="min-h-screen" style={{ backgroundColor: scheme.pageBg, color: scheme.text }}>
       <main className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-16">
-        <Link
-          href="/"
-          className="text-sm underline-offset-4 hover:underline"
-          style={{ color: scheme.textMuted }}
-        >
-          ← back
-        </Link>
-        <div className="mt-3">
+        <div>
           <Link
             href="/blog"
             className="text-sm underline-offset-4 hover:underline"
