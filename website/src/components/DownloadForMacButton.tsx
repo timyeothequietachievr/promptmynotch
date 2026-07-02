@@ -10,14 +10,14 @@ type DownloadForMacButtonProps = {
   variant?: ButtonVariant;
   size?: "sm" | "md" | "lg";
   className?: string;
-  ctaLocation: CtaLocation;
+  ctaLocation?: CtaLocation;
 };
 
 export function DownloadForMacButton({
   variant = "cream",
   size = "lg",
   className = "",
-  ctaLocation,
+  ctaLocation = "hero",
 }: DownloadForMacButtonProps) {
   const checkoutUrl = getPayhipCheckoutUrl();
 
