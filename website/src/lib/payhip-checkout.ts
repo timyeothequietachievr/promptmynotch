@@ -1,4 +1,5 @@
-const DEFAULT_PAYHIP_PRODUCT_KEY = "16O34";
+const DEFAULT_PAYHIP_PRODUCT_KEY = "HZSW8";
+const DEFAULT_PAYHIP_CHECKOUT_URL = "https://payhip.com/b/HZSW8";
 
 /**
  * Public checkout URL for Payhip. Product setup (file upload, Email Octopus,
@@ -7,6 +8,8 @@ const DEFAULT_PAYHIP_PRODUCT_KEY = "16O34";
 export function getPayhipCheckoutUrl(): string | null {
   const explicitUrl = process.env.NEXT_PUBLIC_PAYHIP_CHECKOUT_URL?.trim();
   if (explicitUrl) return explicitUrl;
+
+  if (DEFAULT_PAYHIP_CHECKOUT_URL) return DEFAULT_PAYHIP_CHECKOUT_URL;
 
   const productKey =
     process.env.NEXT_PUBLIC_PAYHIP_PRODUCT_KEY?.trim() ?? DEFAULT_PAYHIP_PRODUCT_KEY;

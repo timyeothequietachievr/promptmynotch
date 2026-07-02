@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import "@/styles/moody.css";
 import { MoodyDownloadButton } from "@/components/moody/MoodyDownloadButton";
 import { NotchHeader } from "@/components/moody/NotchHeader";
+import { trackCtaClick } from "@/lib/analytics";
 import {
   download,
   faqs,
@@ -155,7 +156,19 @@ export function MoodyLandingPage() {
                 className="mt-8 flex flex-col items-center gap-6"
                 style={{ animation: "moody-slide-up 0.5s ease-out 0.55s forwards", opacity: 0 }}
               >
-                <a href="#download" className="glass-cta">
+                <a
+                  href="#download"
+                  className="glass-cta"
+                  onClick={() => {
+                    trackCtaClick({
+                      ctaId: "download_mac",
+                      ctaLabel: moodyHero.cta,
+                      ctaLocation: "moody_hero_scroll",
+                      ctaAction: "scroll",
+                      destinationHref: "#download",
+                    });
+                  }}
+                >
                   <AppleIcon />
                   <span>{moodyHero.cta}</span>
                 </a>
@@ -232,7 +245,16 @@ export function MoodyLandingPage() {
               <button
                 type="button"
                 className="moody-link-toggle moody-divider flex w-full cursor-pointer items-center justify-center gap-2 border-t py-6 text-sm font-semibold transition-colors md:py-8 md:text-base"
-                onClick={() => setShowAllFeatures((v) => !v)}
+                onClick={() => {
+                  const next = !showAllFeatures;
+                  setShowAllFeatures(next);
+                  trackCtaClick({
+                    ctaId: next ? "see_all_features" : "show_less_features",
+                    ctaLabel: next ? "See all features" : "Show less",
+                    ctaLocation: "moody_features",
+                    ctaAction: "toggle",
+                  });
+                }}
               >
                 <span>{showAllFeatures ? "Show less" : "See all features"}</span>
                 <svg
@@ -320,10 +342,49 @@ export function MoodyLandingPage() {
       <footer className="moody-footer relative z-10 px-4 py-8 text-sm">
         <p>Prompt My Notch</p>
         <nav className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-          <a href="/privacy-policy" className="hover:underline">
+          <a
+            href="/blog"
+            className="hover:underline"
+            onClick={() => {
+              trackCtaClick({
+                ctaId: "blog",
+                ctaLabel: "Blog",
+                ctaLocation: "footer_legal",
+                ctaAction: "navigate",
+                destinationHref: "/blog",
+              });
+            }}
+          >
+            Blog
+          </a>
+          <a
+            href="/privacy-policy"
+            className="hover:underline"
+            onClick={() => {
+              trackCtaClick({
+                ctaId: "privacy_policy",
+                ctaLabel: "Privacy Policy",
+                ctaLocation: "footer_legal",
+                ctaAction: "navigate",
+                destinationHref: "/privacy-policy",
+              });
+            }}
+          >
             Privacy Policy
           </a>
-          <a href="/terms-of-service" className="hover:underline">
+          <a
+            href="/terms-of-service"
+            className="hover:underline"
+            onClick={() => {
+              trackCtaClick({
+                ctaId: "terms_of_service",
+                ctaLabel: "Terms of Service",
+                ctaLocation: "footer_legal",
+                ctaAction: "navigate",
+                destinationHref: "/terms-of-service",
+              });
+            }}
+          >
             Terms of Service
           </a>
         </nav>

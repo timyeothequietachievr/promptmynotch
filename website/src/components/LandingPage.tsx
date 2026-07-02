@@ -16,6 +16,7 @@ import {
   type LandingVariantConfig,
 } from "@/lib/landing-variants";
 import { siteTheme } from "@/lib/themes";
+import { blogPosts } from "@/lib/blog-posts";
 
 type LandingPageProps = {
   variant?: LandingVariantConfig;
@@ -179,6 +180,50 @@ export function LandingPage({ variant = defaultLandingVariant }: LandingPageProp
         </section>
       ) : null}
 
+      {/* Blog */}
+      <section style={{ background: scheme.sectionAltBg }} className="py-14 sm:py-16">
+        <Container>
+          <div className="mb-10 text-center">
+            <h2
+              className="font-display text-3xl font-bold sm:text-4xl"
+              style={{ color: scheme.heading }}
+            >
+              From our blog
+            </h2>
+            <p className="mt-3 font-reading text-lg" style={{ color: scheme.textMuted }}>
+              Practical speaking and interview tips from The Quiet Leadership School notes.
+            </p>
+          </div>
+
+          <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
+            {blogPosts.map((post) => (
+              <article
+                key={post.slug}
+                className="rounded-xl p-6"
+                style={{ background: scheme.cardBg, border: `1px solid ${scheme.cardBorder}` }}
+              >
+                <p className="text-xs uppercase tracking-wide" style={{ color: scheme.textMuted }}>
+                  {post.readTime}
+                </p>
+                <h3 className="mt-2 font-display text-xl font-bold" style={{ color: scheme.heading }}>
+                  {post.title}
+                </h3>
+                <p className="mt-3 font-reading text-[15px] leading-relaxed" style={{ color: scheme.textMuted }}>
+                  {post.description}
+                </p>
+                <a
+                  href={`/blog/${post.slug}`}
+                  className="mt-5 inline-block text-sm font-semibold hover:underline"
+                  style={{ color: scheme.accent }}
+                >
+                  Read article →
+                </a>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       {/* FAQ */}
       <section className="py-14 sm:py-16">
         <Container>
@@ -225,7 +270,11 @@ export function LandingPage({ variant = defaultLandingVariant }: LandingPageProp
               {content.download.lead}
             </p>
             <div className="mt-8">
-              <DownloadForMacButton variant={scheme.primaryButton} size="lg" />
+              <DownloadForMacButton
+                variant={scheme.primaryButton}
+                size="lg"
+                ctaLocation="download_section"
+              />
             </div>
           </div>
         </Container>

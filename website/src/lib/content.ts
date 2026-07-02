@@ -22,7 +22,7 @@ export const hero = {
     "Hidden from screen share",
     "Mirror Check",
   ],
-  ctaNote: "Beta · 50 spots only",
+  ctaNote: "Available now",
   systemReq: "macOS 14.0 or later (Apple Silicon or Intel)",
 };
 export const intro = {
@@ -222,8 +222,8 @@ export const privacy = {
 
 export const download = {
   title: "Forget forgetting your lines",
-  lead: "The app is currently in beta (50 spots only). Tell us what you'll use it for & download for free.",
-  note: "Public beta · Camera optional · Google Slides sync · Keynote for .key import",
+  lead: "Tell us what you'll use it for and download Prompt My Notch.",
+  note: "Camera optional · Google Slides sync · Keynote for .key import",
 };
 
 export const faqs = [

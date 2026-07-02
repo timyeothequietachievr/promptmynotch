@@ -12,10 +12,10 @@ export const defaultLandingVariant: LandingVariantConfig = {
   showPrivacy: true,
 };
 
-/** Simple (beta) — trimmed module set; keeps Google Slides sync and camera features */
+/** Simple — trimmed module set; keeps Google Slides sync and camera features */
 export const simpleLandingVariant: LandingVariantConfig = {
   id: "simple",
-  codeName: "Simple (beta)",
+  codeName: "Simple",
   showSteps: false,
   showPrivacy: false,
 };

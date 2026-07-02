@@ -21,7 +21,7 @@ export const privacyPolicy = {
         "We may collect the following types of information:",
       ],
       list: [
-        "Contact information you provide voluntarily, such as your email address when signing up for the beta or contacting us.",
+        "Contact information you provide voluntarily, such as your email address when contacting us.",
         "Usage information about how you interact with our website, such as pages visited and referral source.",
         "Technical information such as browser type, device type, and general location (country or region).",
         "App-related data stored locally on your Mac, such as scripts and settings, which remain on your device unless you choose to sync or share them.",
@@ -34,7 +34,7 @@ export const privacyPolicy = {
       ],
       list: [
         "Provide, maintain, and improve the Prompt My Notch app and website.",
-        "Respond to support requests and communicate about the beta.",
+        "Respond to support requests and communicate about the app.",
         "Send product updates or announcements if you have opted in.",
         "Understand how our website is used and fix issues.",
         "Comply with legal obligations.",
@@ -92,9 +92,9 @@ export const termsOfService = {
       ],
     },
     {
-      heading: "Beta software",
+      heading: "Service availability",
       body: [
-        "Prompt My Notch is currently offered as a public beta. The Service may contain bugs, change without notice, or be discontinued at any time. We provide the Service on an \"as is\" and \"as available\" basis.",
+        "The Service may contain bugs, change without notice, or be discontinued at any time. We provide the Service on an \"as is\" and \"as available\" basis.",
       ],
     },
     {
